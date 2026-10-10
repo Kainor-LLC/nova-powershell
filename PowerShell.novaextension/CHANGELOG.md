@@ -3,6 +3,7 @@
 - New: Run Selection in PowerShell (Editor menu) runs the selected lines or the current line and shows the output
 - Fixed: highlighting error for backtick escapes inside unquoted arguments, like ``Write-Host foo`nbar``
 - Fixed: license page formatting in the Extension Library
+- Fixed: "Another instance of PowerShell Editor Services is already running" error when changing preferences such as PowerShell Path
 
 ## Version 1.0.1
 

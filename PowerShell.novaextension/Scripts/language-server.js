@@ -42,7 +42,16 @@ class PowerShellLanguageServer {
         this.resyncTimers = new Map();
     }
 
-    async start() {
+    // Starts are serialized: findPwsh() is async, so overlapping calls could otherwise each
+    // see no client and create two LanguageClients with the same identifier.
+    start() {
+        this.startQueue = (this.startQueue || Promise.resolve())
+            .then(() => this.startNow())
+            .catch((err) => console.error(`Could not start PowerShell Editor Services: ${err.message}`));
+        return this.startQueue;
+    }
+
+    async startNow() {
         if (this.client) {
             return;
         }
@@ -186,13 +195,17 @@ class PowerShellLanguageServer {
         return { sessionFile: this.sessionFile, outputFile: this.outputFile };
     }
 
-    async restart() {
-        this.restarting = true;
-        this.stop();
-        // Give the old process a moment to exit before starting a new one.
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        this.restarting = false;
-        await this.start();
+    // Debounced: preference fields report every keystroke, and each change calls restart().
+    restart() {
+        clearTimeout(this.restartTimer);
+        this.restartTimer = setTimeout(async () => {
+            this.restarting = true;
+            this.stop();
+            // Give the old process a moment to exit before starting a new one.
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            this.restarting = false;
+            await this.start();
+        }, 1000);
     }
 
     // PSES reads its settings from workspace/didChangeConfiguration.
