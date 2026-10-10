@@ -22,6 +22,7 @@ Powered by [PowerShell Editor Services](https://github.com/PowerShell/PowerShell
 - **Format Document** and **Format Selection** (Editor menu), with optional format on save
 - **Rename Symbol** for functions and variables in the current file (Editor menu)
 - **Show Help for Command**: full `Get-Help` output for the command under the cursor (Editor menu)
+- **Run Selection in PowerShell**: runs the selected lines (or the current line) and shows the output in a new tab (Editor menu)
 
 ![PSScriptAnalyzer warnings in the editor and Issues sidebar](https://raw.githubusercontent.com/Kainor-LLC/nova-powershell/main/docs/screenshots/diagnostics.png)
 

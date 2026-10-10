@@ -22,6 +22,7 @@ PSScriptAnalyzer, dbatools, PowerShell-Docs) with zero ERROR/MISSING nodes:
 - Switch clauses may share one line (`'a' { 1 } default { 2 }`).
 - `break label` / `continue label` with a bare label name (`label_name` node).
 - `class`, `enum`, `hidden`, `static` keywords are exposed as anonymous nodes for highlighting.
+- Backtick escapes inside bareword arguments after a word (``Write-Host foo`nbar``).
 - Tests for the above: `test/corpus/kainor.txt`.
 
 These are good candidates to contribute upstream.

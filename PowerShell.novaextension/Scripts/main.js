@@ -4,6 +4,7 @@ const { PowerShellLanguageServer } = require("./language-server.js");
 const { formatEditor } = require("./formatting.js");
 const { renameSymbol } = require("./rename.js");
 const { showHelp } = require("./help.js");
+const { runSelection } = require("./run-selection.js");
 const settings = require("./settings.js");
 const tasks = require("./tasks.js");
 const snippets = require("./snippets.js");
@@ -37,6 +38,12 @@ exports.activate = function () {
     nova.commands.register("powershell.showHelp", (editor) => {
         if (isPowerShell(editor)) {
             showHelp(editor).catch(reportError);
+        }
+    });
+
+    nova.commands.register("powershell.runSelection", (editor) => {
+        if (isPowerShell(editor)) {
+            runSelection(editor).catch(reportError);
         }
     });
 

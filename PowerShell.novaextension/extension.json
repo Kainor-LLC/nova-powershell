@@ -3,7 +3,7 @@
     "name": "PowerShell",
     "organization": "Kainor LLC",
     "description": "PowerShell 7 support: syntax highlighting, completions, diagnostics, formatting, tasks, and debugging.",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "min_runtime": "11.0",
     "categories": [
         "languages",
@@ -41,6 +41,15 @@
             {
                 "title": "Show Help for Command",
                 "command": "powershell.showHelp",
+                "filters": {
+                    "syntaxes": [
+                        "powershell"
+                    ]
+                }
+            },
+            {
+                "title": "Run Selection in PowerShell",
+                "command": "powershell.runSelection",
                 "filters": {
                     "syntaxes": [
                         "powershell"
