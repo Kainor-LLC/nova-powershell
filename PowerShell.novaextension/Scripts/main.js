@@ -125,6 +125,7 @@ exports.activate = function () {
 };
 
 exports.deactivate = function () {
+    console.log("PowerShell extension deactivating");
     if (server) {
         server.stop();
         server = null;

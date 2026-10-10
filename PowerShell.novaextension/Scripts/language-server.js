@@ -173,8 +173,18 @@ class PowerShellLanguageServer {
             this.stopListener = null;
         }
         if (this.client) {
-            this.client.stop();
+            const client = this.client;
             this.client = null;
+            // Nova doesn't send shutdown/exit when an extension deactivates; it kills the
+            // server after ~15 s. Ask for a shutdown ourselves (the relay exits as soon as
+            // it is answered), then stop the bridge if it is somehow still running.
+            try {
+                client.sendRequest("shutdown", null).catch(() => {});
+            } catch (err) {
+                // Client may already be gone.
+            }
+            client.stop();
+            this.terminateBridge(this.sessionFile);
         }
         if (this.outputFile) {
             const outputFile = this.outputFile;
@@ -212,6 +222,33 @@ class PowerShellLanguageServer {
                 console.error(`Could not resync ${uri}: ${err.message}`);
             }
         }, 300));
+    }
+
+    // Fallback for stop(): terminate the bridge process (which stops PSES) if it is still
+    // running a second after we asked it to shut down.
+    terminateBridge(sessionFile) {
+        if (!sessionFile) {
+            return;
+        }
+        const pidFile = `${sessionFile}.pid`;
+        setTimeout(() => {
+            let pid = "";
+            try {
+                const file = nova.fs.open(pidFile, "r");
+                pid = (file.read() || "").trim();
+                file.close();
+            } catch (err) {
+                return; // Already exited and cleaned up.
+            }
+            if (!/^\d+$/.test(pid)) {
+                return;
+            }
+            try {
+                new Process("/bin/kill", { args: ["-TERM", pid] }).start();
+            } catch (err) {
+                console.error(`Could not stop the language server bridge: ${err.message}`);
+            }
+        }, 1000);
     }
 
     // Paths the debug adapter relay needs, or null when the language server isn't running.
