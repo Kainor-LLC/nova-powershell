@@ -89,6 +89,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] Tagged and released `v1.0.1` on GitHub (public history squashed to a single commit; full history in the private Kainor-LLC/nova-powershell-history repo)
 - [x] 1.0.1: license changed to MIT with the Commons Clause; submitted and tagged `v1.0.1`
 - [x] 1.0.2: Run Selection, bareword escape fix, restart debounce fix, CI; submitted and tagged `v1.0.2`
+- [x] 1.1.0: manifest support, help highlighting, Pester at cursor, start/stop fixes, update checker, funding link; submitted and tagged `v1.1.0`
 - [x] GitHub: public repo, issues on, bug report form, CODEOWNERS, main protected (only maintainer can push/merge)
 - [x] CI: grammar tests, ABI check, query compile, sample parsing, JS/manifest checks (`.github/workflows/ci.yml`)
 
