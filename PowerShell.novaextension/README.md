@@ -91,6 +91,8 @@ In Extensions → Extension Library → PowerShell → Settings:
 
 Please report issues at [github.com/Kainor-LLC/nova-powershell](https://github.com/Kainor-LLC/nova-powershell/issues).
 
+If this extension saves you time, you can [buy me a coffee](https://buymeacoffee.com/kainorllc).
+
 ## License
 
 Free for anyone to use, including at work. Source is on [GitHub](https://github.com/Kainor-LLC/nova-powershell) under the MIT License with the [Commons Clause](https://commonsclause.com), which doesn't allow selling it or products and services based substantially on it. Bundled components from Microsoft and the Tree-sitter grammar keep their own MIT licenses.

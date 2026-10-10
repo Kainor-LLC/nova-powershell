@@ -16,6 +16,7 @@
     "license": "MIT with Commons Clause",
     "repository": "https://github.com/Kainor-LLC/nova-powershell",
     "bugs": "https://github.com/Kainor-LLC/nova-powershell/issues",
+    "funding": "https://buymeacoffee.com/kainorllc",
     "main": "main.js",
     "activationEvents": [
         "onLanguage:powershell",
