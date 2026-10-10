@@ -220,10 +220,19 @@ class PowerShellLanguageServer {
         }, 300));
     }
 
-    // Terminates PSES synchronously using the pid the bridge recorded.
+    // Stops PSES from deactivate(), where only synchronous work runs. A marker file is
+    // the reliable signal: the bridge's watchdog kills PSES when it appears. The direct
+    // kill below is a faster path when Nova does let the process spawn.
     terminateServer(sessionFile) {
         if (!sessionFile) {
             return;
+        }
+        try {
+            const marker = nova.fs.open(`${sessionFile}.stop`, "w");
+            marker.write("stop\n");
+            marker.close();
+        } catch (err) {
+            console.error(`Could not write the stop marker: ${err.message}`);
         }
         let pid = "";
         try {

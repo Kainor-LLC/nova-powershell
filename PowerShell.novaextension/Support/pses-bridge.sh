@@ -37,21 +37,25 @@ echo "$PSES_PID" > "$SESSION_FILE.pid"
 
 cleanup() {
     kill "$PSES_PID" 2>/dev/null
-    rm -f "$SESSION_FILE" "$SESSION_FILE.pid"
+    rm -f "$SESSION_FILE" "$SESSION_FILE.pid" "$SESSION_FILE.stop"
 }
 trap cleanup EXIT INT TERM HUP
 
-# Watchdog: stop PSES if this bridge is killed outright (SIGKILL skips the trap) or if
-# the process that launched it (Nova's extension host) goes away.
+# Watchdog: stop PSES if the extension asks (it writes SESSION_FILE.stop on deactivation,
+# because Nova neither sends shutdown nor lets it spawn a process then), if this bridge is
+# killed outright (SIGKILL skips the trap), or if the process that launched it goes away.
 BRIDGE_PID=$$
 LAUNCHER_PID=$PPID
 (
     ticks=0
     while kill -0 "$BRIDGE_PID" 2>/dev/null && kill -0 "$LAUNCHER_PID" 2>/dev/null && kill -0 "$PSES_PID" 2>/dev/null; do
-        sleep 1
+        sleep 0.5
+        if [ -e "$SESSION_FILE.stop" ]; then
+            break
+        fi
         ticks=$((ticks + 1))
         # Keep this session's files fresh so other Nova windows' stale-file cleanup skips them.
-        if [ $((ticks % 60)) -eq 0 ]; then
+        if [ $((ticks % 120)) -eq 0 ]; then
             touch "$SESSION_FILE" "$OUTPUT_FILE" 2>/dev/null
         fi
     done
