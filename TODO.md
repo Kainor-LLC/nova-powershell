@@ -72,7 +72,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] CHANGELOG and version 1.0.0; min_runtime 11.0 (parser built as Tree-sitter ABI 14 for older Nova; only tested on Nova 14.1)
 - [x] Debug adapter log is opt-in (Log Language Server and Debugger Traffic preference); stale session/log/run files cleaned up at startup
 - [x] Tested on Apple Silicon; Intel untested (universal binary, noted in README)
-- [~] Test without pwsh installed — verify in Nova (point PowerShell Path at a missing file)
+- [x] Test without pwsh installed (PowerShell Path set to a missing file shows the notice; verified in Nova)
 - [x] Submitted to the Extension Library (live 2026-10-09: https://extensions.panic.com/extensions/kainorllc/kainorllc.PowerShell/)
 - [x] Tagged and released `v1.0.1` on GitHub (public history squashed to a single commit; full history in the private Kainor-LLC/nova-powershell-history repo)
 - [x] 1.0.1: license changed to MIT with the Commons Clause; submitted and tagged `v1.0.1`
