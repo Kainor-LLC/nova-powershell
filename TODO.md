@@ -78,7 +78,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] Tested on Apple Silicon; Intel untested (universal binary, noted in README)
 - [ ] Test without pwsh installed (optional)
 - [x] Submitted to the Extension Library (live 2026-10-09: https://extensions.panic.com/extensions/kainorllc/kainorllc.PowerShell/)
-- [x] Tagged and released `v1.0.0` on GitHub
+- [x] Tagged and released `v1.0.1` on GitHub (public history squashed to a single commit; full history in the private Kainor-LLC/nova-powershell-history repo)
 - [x] 1.0.1: license changed to MIT with the Commons Clause; submitted and tagged `v1.0.1`
 - [x] GitHub: public repo, issues on, bug report form, CODEOWNERS, main protected (only maintainer can push/merge)
 - [ ] CI to build parser (stretch)
