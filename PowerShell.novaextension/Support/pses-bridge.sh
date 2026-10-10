@@ -5,7 +5,7 @@
 # Named-pipe mode is needed for debugging: PSES only creates its debug service alongside
 # the language server in this mode (its stdio debug-only mode crashes on PowerShell 7.6).
 #
-# Usage: pses-bridge.sh PWSH SERVER_DIR SESSION_FILE OUTPUT_FILE LOG_DIR LOG_LEVEL HOST_VERSION
+# Usage: pses-bridge.sh PWSH SERVER_DIR SESSION_FILE OUTPUT_FILE LOG_DIR LOG_LEVEL HOST_VERSION CACHE_DIR
 
 PWSH="$1"
 SERVER_DIR="$2"
@@ -14,6 +14,8 @@ OUTPUT_FILE="$4"
 LOG_DIR="$5"
 LOG_LEVEL="$6"
 HOST_VERSION="$7"
+CACHE_DIR="$8"
+SUPPORT_DIR=$(cd "$(dirname "$0")" && pwd)
 
 rm -f "$SESSION_FILE"
 : > "$OUTPUT_FILE"
@@ -52,25 +54,9 @@ LAUNCHER_PID=$PPID
     kill "$PSES_PID" 2>/dev/null
 ) < /dev/null > /dev/null 2>&1 &
 
-# Wait up to 60 seconds for PSES to report its socket names.
-i=0
-while [ $i -lt 600 ]; do
-    if [ -s "$SESSION_FILE" ] && grep -q '"status":"started"' "$SESSION_FILE"; then
-        break
-    fi
-    if ! kill -0 "$PSES_PID" 2>/dev/null; then
-        echo "PowerShell Editor Services exited during startup:" >&2
-        cat "$OUTPUT_FILE" >&2
-        exit 1
-    fi
-    sleep 0.1
-    i=$((i + 1))
-done
-
-PIPE=$(sed -n 's/.*"languageServicePipeName":"\([^"]*\)".*/\1/p' "$SESSION_FILE")
-if [ -z "$PIPE" ]; then
-    echo "PowerShell Editor Services did not start: $(cat "$SESSION_FILE" 2>/dev/null)" >&2
-    exit 1
-fi
-
-nc -U "$PIPE"
+# Relay stdio to the language service socket. The relay waits for PSES's session file
+# itself and exits as soon as Nova closes stdin or PSES closes the socket; the trap
+# above then stops PSES. (nc isn't used: on macOS it keeps running after stdin closes,
+# and PSES keeps running after the LSP "exit", so Nova had to wait out its timeout.)
+NOVA_PS_SESSION_FILE="$SESSION_FILE" NOVA_PS_CACHE_DIR="$CACHE_DIR" \
+    "$PWSH" -NoLogo -NoProfile -NonInteractive -File "$SUPPORT_DIR/LspRelay.ps1"

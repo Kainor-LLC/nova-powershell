@@ -16,7 +16,7 @@ A PowerShell extension for [Nova](https://nova.app) by Kainor LLC. See the [exte
 
 ## How it fits together
 
-- **Language server:** Nova's `LanguageClient` runs `Support/pses-bridge.sh`, which starts PowerShell Editor Services (PSES) with Unix sockets and bridges stdio to its language service socket with `nc -U`. Socket mode is what enables the PSES debug service; PSES's stdio debug-only mode crashes on PowerShell 7.6.
+- **Language server:** Nova's `LanguageClient` runs `Support/pses-bridge.sh`, which starts PowerShell Editor Services (PSES) with Unix sockets and runs `Support/LspRelay.ps1` to relay stdio to the language service socket. The relay exits as soon as Nova closes the pipe or sends the LSP `exit`, so PSES is stopped immediately (PSES itself keeps running after `exit`, and macOS `nc` never quits on a closed stdin). Socket mode is what enables the PSES debug service; PSES's stdio debug-only mode crashes on PowerShell 7.6.
 - **Debugging:** Debug tasks launch `Support/DebugAdapter.ps1`, a stdio debug adapter that relays DAP to the PSES debug socket. It forwards the script's console output (captured by the bridge) as DAP output events, and rewrites PSES's `label` stack frames so Nova can select them.
 - **Tasks:** Run and Pester tasks run `Support/Invoke-NovaTask.ps1`, which writes errors with file and line to a JSON file that the extension publishes to the Issues sidebar.
 

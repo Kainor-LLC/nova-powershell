@@ -1,7 +1,8 @@
 ## Version 1.1.0
 
 - New: comment-based help keywords are highlighted inside `<# … #>` comments
-- Fixed: the language server could fail to start after a restart or reactivation ("Another instance ... is already running"); it now waits for the previous instance to stop
+- Fixed: the language server could fail to start after a restart or reactivation ("Another instance ... is already running"); stopping is now immediate instead of taking 15 seconds, and starting retries while an old instance finishes
+- Fixed: preferences set before startup are now applied (the first settings message could arrive before the server was ready and be dropped)
 - New: module manifest (.psd1) support: completions for keys and values, checks on save with `Test-ModuleManifest` and `FunctionsToExport` verification, and a New Module Manifest… command
 
 ## Version 1.0.2

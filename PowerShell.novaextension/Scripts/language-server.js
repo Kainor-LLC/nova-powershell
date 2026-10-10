@@ -119,6 +119,7 @@ class PowerShellLanguageServer {
             logDir,
             settings.get("powershell.languageServer.logLevel", "string") || "Warning",
             nova.extension.version,
+            nova.path.join(nova.extension.globalStoragePath, "cache"),
         ];
 
         const client = new LanguageClient(
@@ -152,7 +153,16 @@ class PowerShellLanguageServer {
         this.startRetries = 0;
         console.log(`Started PowerShell Editor Services with ${pwsh}`);
 
+        // PSES drops notifications that arrive before it finishes initializing, and Nova
+        // doesn't report when that happens, so send the settings now and again shortly after.
         this.pushSettings();
+        for (const delay of [2000, 5000, 10000]) {
+            setTimeout(() => {
+                if (this.client === client) {
+                    this.pushSettings();
+                }
+            }, delay);
+        }
     }
 
     stop() {
