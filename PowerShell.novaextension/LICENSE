@@ -82,6 +82,6 @@ SOFTWARE.
 
 Server/ contains PowerShell Editor Services, PSScriptAnalyzer, and PSReadLine
 (MIT, © Microsoft Corporation). Their licenses and third-party notices are
-included alongside them: Server/LICENSE, Server/NOTICE.txt,
-Server/PSScriptAnalyzer/*/LICENSE, Server/PSScriptAnalyzer/*/ThirdPartyNotices.txt,
-and Server/PSReadLine/*/License.txt.
+included alongside them: LICENSE and NOTICE.txt in the Server folder, LICENSE
+and ThirdPartyNotices.txt in the PSScriptAnalyzer version folder, and
+License.txt in the PSReadLine version folder.
