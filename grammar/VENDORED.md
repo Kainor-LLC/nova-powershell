@@ -25,6 +25,13 @@ PSScriptAnalyzer, dbatools, PowerShell-Docs) with zero ERROR/MISSING nodes:
 - Backtick escapes inside bareword arguments after a word (``Write-Host foo`nbar``).
 - Tests for the above: `test/corpus/kainor.txt`.
 
-These are good candidates to contribute upstream.
+These were submitted upstream as https://github.com/wharflab/tree-sitter-powershell/pull/112.
+
+## When the upstream PR is merged
+
+1. `git clone --depth 1 https://github.com/wharflab/tree-sitter-powershell.git /tmp/tsp` and note its commit.
+2. Replace `tree-sitter-powershell/` with the clone (minus `.git`), keeping `test/corpus/kainor.txt` only if upstream didn't take the tests.
+3. Update the commit in this file and drop the "Local changes" that upstream now includes.
+4. `tools/build-parser.sh`, run `tree-sitter test` in the grammar folder, and reactivate the extension to check highlighting.
 
 Rebuild the Nova parser with `tools/build-parser.sh`. Run grammar tests with `tree-sitter test` from the grammar folder.

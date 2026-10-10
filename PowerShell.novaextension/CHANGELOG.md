@@ -1,5 +1,6 @@
 ## Version 1.1.0
 
+- New: Run Pester Test at Cursor task runs only the test block the cursor is in
 - New: comment-based help keywords are highlighted inside `<# … #>` comments
 - Fixed: the language server could fail to start after a restart or reactivation ("Another instance ... is already running"); stopping is now immediate instead of taking 15 seconds, and starting retries while an old instance finishes
 - Fixed: preferences set before startup are now applied (the first settings message could arrive before the server was ready and be dropped)

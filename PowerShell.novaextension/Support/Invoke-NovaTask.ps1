@@ -10,6 +10,7 @@
       NOVA_PS_SCRIPT         Script path (Script mode)
       NOVA_PS_ARGS           JSON array of script arguments (Script mode)
       NOVA_PS_PESTER_PATH    Test file or folder (Pester mode)
+      NOVA_PS_PESTER_LINE    Cursor line: run only the It/Context/Describe containing it (Pester mode)
       NOVA_PS_PESTER_OUTPUT  Pester output verbosity (Pester mode)
       NOVA_PS_RESULT_PATH    Where to write the JSON issue list
 #>
@@ -139,6 +140,29 @@ if ($env:NOVA_PS_MODE -eq 'Pester') {
     $config.Run.Path = $env:NOVA_PS_PESTER_PATH
     $config.Run.PassThru = $true
     $config.Output.Verbosity = $env:NOVA_PS_PESTER_OUTPUT
+
+    # Pester's line filter needs the start line of an It/Context/Describe, so find the
+    # innermost block containing the cursor line.
+    if ($env:NOVA_PS_PESTER_LINE -match '^\d+$' -and (Test-Path -LiteralPath $env:NOVA_PS_PESTER_PATH -PathType Leaf)) {
+        $cursor = [int]$env:NOVA_PS_PESTER_LINE
+        $tokens = $null; $parseErrors = $null
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($env:NOVA_PS_PESTER_PATH, [ref]$tokens, [ref]$parseErrors)
+        $block = $ast.FindAll({
+            param($n)
+            $n -is [System.Management.Automation.Language.CommandAst] -and
+            $n.GetCommandName() -in 'It', 'Context', 'Describe' -and
+            $n.Extent.StartLineNumber -le $cursor -and $n.Extent.EndLineNumber -ge $cursor
+        }, $true) | Sort-Object { $_.Extent.EndLineNumber - $_.Extent.StartLineNumber } | Select-Object -First 1
+        if ($block) {
+            $name = $block.CommandElements | Select-Object -Skip 1 -First 1 | ForEach-Object { $_.Extent.Text }
+            $config.Filter.Line = "$($env:NOVA_PS_PESTER_PATH):$($block.Extent.StartLineNumber)"
+            Write-Host "Running $($block.GetCommandName()) $name (line $($block.Extent.StartLineNumber))"
+        }
+        else {
+            Write-Host "No test block contains line $cursor; running the whole file."
+        }
+    }
+
     $result = Invoke-Pester -Configuration $config
 
     foreach ($test in $result.Failed) {

@@ -1,0 +1,40 @@
+name: Update check
+
+# Weekly: opens an issue when a bundled component has a newer release or the
+# upstream grammar pull request has been merged.
+
+on:
+  schedule:
+    - cron: "0 14 * * 1"   # Mondays, 14:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check for updates
+        id: check
+        run: |
+          set +e
+          sh tools/check-updates.sh | tee report.txt
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Open an issue if something is new
+        if: steps.check.outputs.status == '2'
+        run: |
+          title="Updates available for bundled components"
+          existing=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "\"$title\" in:title" --json number --jq '.[0].number')
+          body=$(printf 'The weekly check found updates:\n\n```\n%s\n```\n\nSee `tools/check-updates.sh` and `grammar/VENDORED.md`.' "$(cat report.txt)")
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" -R "$GITHUB_REPOSITORY" --body "$body"
+          else
+            gh issue create -R "$GITHUB_REPOSITORY" --title "$title" --label maintenance --body "$body"
+          fi

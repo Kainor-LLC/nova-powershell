@@ -209,13 +209,16 @@ class PowerShellTaskAssistant {
         const pester = new Task("Run Pester Tests");
         pester.setAction(Task.Run, new TaskResolvableAction({ data: { type: "pester" } }));
 
+        const pesterAtCursor = new Task("Run Pester Test at Cursor");
+        pesterAtCursor.setAction(Task.Run, new TaskResolvableAction({ data: { type: "pester", atCursor: true } }));
+
         const debug = new Task("Debug Current Script");
         debug.setAction(Task.Run, new TaskResolvableAction({ data: { type: "script", debug: true } }));
 
         const debugWithArgs = new Task("Debug Current Script with Arguments…");
         debugWithArgs.setAction(Task.Run, new TaskResolvableAction({ data: { type: "script", debug: true, askArgs: true } }));
 
-        return [run, runWithArgs, debug, debugWithArgs, pester];
+        return [run, runWithArgs, debug, debugWithArgs, pester, pesterAtCursor];
     }
 
     async resolveTaskAction(context) {
@@ -261,16 +264,28 @@ class PowerShellTaskAssistant {
         }
 
         if (data.type === "pester") {
+            const output = configValue(config, "powershell.pester.output", "string") || "Detailed";
+            const env = { NOVA_PS_MODE: "Pester", NOVA_PS_PESTER_OUTPUT: output };
+
+            if (data.atCursor) {
+                // The test file open in the editor, and the line the cursor is on.
+                const editor = nova.workspace.activeTextEditor;
+                const script = await activeScriptPath();
+                if (!editor || !script) {
+                    nova.workspace.showErrorMessage("Open a saved Pester test file and place the cursor inside a test.");
+                    return null;
+                }
+                const before = editor.getTextInRange(new Range(0, editor.selectedRange.start));
+                env.NOVA_PS_PESTER_PATH = script;
+                env.NOVA_PS_PESTER_LINE = String(before.split("\n").length);
+                return wrapperAction(pwsh, env, nova.workspace.path || nova.path.dirname(script));
+            }
+
             const testPath = resolvePath(configValue(config, "powershell.pester.path", "string"))
                 || nova.workspace.path
                 || nova.path.dirname(await activeScriptPath() || "");
-            const output = configValue(config, "powershell.pester.output", "string") || "Detailed";
-
-            return wrapperAction(pwsh, {
-                NOVA_PS_MODE: "Pester",
-                NOVA_PS_PESTER_PATH: testPath,
-                NOVA_PS_PESTER_OUTPUT: output,
-            }, nova.workspace.path || testPath);
+            env.NOVA_PS_PESTER_PATH = testPath;
+            return wrapperAction(pwsh, env, nova.workspace.path || testPath);
         }
 
         return null;

@@ -67,6 +67,9 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 ## Phase 6 — 1.1
 - [x] Module manifest support: key/value completions, `manifest` skeleton, checks on save (Test-ModuleManifest + export check), New Module Manifest… (verified in Nova)
 - [x] GitHub: feature request issue form for suggestions; blank issues off
+- [~] Run Pester Test at Cursor task (innermost It/Context/Describe via AST + Pester Filter.Line) — verify in Nova
+- [x] `tools/check-updates.sh` + `tools/bump-pses.sh`; weekly `update-check` workflow opens a `maintenance` issue when PSES or the grammar has updates or PR #112 merges
+- [x] Buy Me a Coffee link (GitHub Sponsor button, manifest `funding`, README)
 - [x] Help keyword highlighting inside `<# #>` comments (verified in Nova)
 - [x] Language server start/stop: unique client id per start, LspRelay.ps1 replaces nc, deactivate() writes a stop marker the bridge watches (Nova sends no shutdown and runs no processes during deactivate); old server gone 0.4 s after deactivation (verified in Nova)
 - [x] Settings re-sent after PSES initializes (PSES drops notifications that arrive earlier)

@@ -39,7 +39,7 @@ Available from the task menu in the toolbar:
 
 - **Run Current Script** and **Run Current Script with Arguments…**
 - **Debug Current Script** and **Debug Current Script with Arguments…**
-- **Run Pester Tests**
+- **Run Pester Tests**, and **Run Pester Test at Cursor** to run just the `It`, `Context`, or `Describe` block the cursor is in
 
 Errors and failed tests appear in the Issues sidebar with their file and line. For a reusable setup, add a **PowerShell Script**, **PowerShell Debug**, or **Pester Tests** task in Project Settings → Tasks.
 
