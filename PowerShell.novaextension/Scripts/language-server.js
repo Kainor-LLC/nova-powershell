@@ -40,6 +40,7 @@ class PowerShellLanguageServer {
         // Version numbers for resyncs; kept above Nova's own so they read as newer.
         this.resyncVersion = 1000000;
         this.resyncTimers = new Map();
+        this.startRetries = 0;
     }
 
     // Starts are serialized: findPwsh() is async, so overlapping calls could otherwise each
@@ -47,8 +48,21 @@ class PowerShellLanguageServer {
     start() {
         this.startQueue = (this.startQueue || Promise.resolve())
             .then(() => this.startNow())
-            .catch((err) => console.error(`Could not start PowerShell Editor Services: ${err.message}`));
+            .catch((err) => this.handleStartError(err));
         return this.startQueue;
+    }
+
+    handleStartError(err) {
+        // Nova keeps a stopped client's identifier reserved until its process has exited.
+        // Right after a restart or a reactivation that can take a few seconds, so retry.
+        if (/already running/i.test(err.message || "") && this.startRetries < 10) {
+            this.startRetries++;
+            console.log(`PowerShell Editor Services is still stopping; retrying (${this.startRetries}/10)`);
+            setTimeout(() => this.start(), 1500);
+            return;
+        }
+        this.startRetries = 0;
+        console.error(`Could not start PowerShell Editor Services: ${err.message}`);
     }
 
     async startNow() {
@@ -135,6 +149,7 @@ class PowerShellLanguageServer {
 
         client.start();
         this.client = client;
+        this.startRetries = 0;
         console.log(`Started PowerShell Editor Services with ${pwsh}`);
 
         this.pushSettings();
@@ -200,9 +215,12 @@ class PowerShellLanguageServer {
         clearTimeout(this.restartTimer);
         this.restartTimer = setTimeout(async () => {
             this.restarting = true;
+            const previous = this.client;
             this.stop();
-            // Give the old process a moment to exit before starting a new one.
-            await new Promise((resolve) => setTimeout(resolve, 500));
+            // Wait for the old client to finish stopping (up to 10 s) before starting a new one.
+            for (let i = 0; i < 20 && previous && previous.running; i++) {
+                await new Promise((resolve) => setTimeout(resolve, 500));
+            }
             this.restarting = false;
             await this.start();
         }, 1000);
