@@ -83,9 +83,14 @@ exports.activate = function () {
 
     nova.workspace.onDidAddTextEditor((editor) => {
         // A change that leaves the document clean is a reload from disk (or an undo back
-        // to the saved text); either way, resend the text.
+        // to the saved text); either way, resend the text. A save also leaves it clean,
+        // but Nova's client already sent those edits, so skip resyncs right after one.
+        let lastSave = 0;
+        editor.onDidSave(() => {
+            lastSave = Date.now();
+        });
         editor.onDidStopChanging((editor) => {
-            if (isPowerShell(editor) && !editor.document.isDirty) {
+            if (isPowerShell(editor) && !editor.document.isDirty && Date.now() - lastSave > 1500) {
                 server.resyncDocument(editor);
             }
         });

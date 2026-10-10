@@ -294,16 +294,7 @@ function snippetKind() {
 }
 
 class SnippetCompletionAssistant {
-    constructor() {
-        this.loggedFirstRequest = false;
-    }
-
     provideCompletionItems(editor, context) {
-        if (!this.loggedFirstRequest) {
-            console.log("PowerShell snippets: completion requested");
-            this.loggedFirstRequest = true;
-        }
-
         const typed = (context.text || "").toLowerCase();
         if (!typed || /\.psd1$/i.test(editor.document.path || "")) {
             return [];

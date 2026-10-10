@@ -5,7 +5,8 @@ const settings = require("./settings.js");
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-// Deletes files older than maxAgeMs, e.g. left behind if Nova quit unexpectedly.
+// Deletes files older than maxAgeMs (e.g. left behind if Nova quit unexpectedly), and
+// empty ones right away: PSES creates a log on every start and usually writes nothing.
 function removeStaleFiles(dir, maxAgeMs) {
     let names = [];
     try {
@@ -18,7 +19,7 @@ function removeStaleFiles(dir, maxAgeMs) {
         const path = nova.path.join(dir, name);
         try {
             const stats = nova.fs.stat(path);
-            if (stats && stats.isFile() && stats.mtime.getTime() < cutoff) {
+            if (stats && stats.isFile() && (stats.mtime.getTime() < cutoff || stats.size <= 3)) {
                 nova.fs.remove(path);
             }
         } catch (err) {
@@ -155,16 +156,19 @@ class PowerShellLanguageServer {
         this.startRetries = 0;
         console.log(`Started PowerShell Editor Services with ${pwsh}`);
 
-        // PSES drops notifications that arrive before it finishes initializing, and Nova
-        // doesn't report when that happens, so send the settings now and again shortly after.
-        this.pushSettings();
-        for (const delay of [2000, 5000, 10000]) {
-            setTimeout(() => {
-                if (this.client === client) {
-                    this.pushSettings();
-                }
-            }, delay);
-        }
+        // PSES drops notifications that arrive before it has initialized, so wait until it
+        // answers a request before sending the settings.
+        this.waitForServer(client).then((version) => {
+            if (this.client !== client) {
+                return;
+            }
+            if (version) {
+                console.log(`PowerShell Editor Services ready (PowerShell ${version.version})`);
+            } else {
+                console.error("PowerShell Editor Services did not answer within 60 s; sending settings anyway");
+            }
+            this.pushSettings();
+        });
     }
 
     stop() {
@@ -274,6 +278,24 @@ class PowerShellLanguageServer {
             this.restarting = false;
             await this.start();
         }, 1000);
+    }
+
+    // Resolves with PSES's version once it answers requests, i.e. after initialization.
+    // A request sent earlier is answered with an error that carries no request id, which
+    // never resolves the promise, so each probe gets a short deadline and is retried.
+    async waitForServer(client) {
+        const deadline = Date.now() + 60000;
+        while (this.client === client && Date.now() < deadline) {
+            try {
+                return await Promise.race([
+                    client.sendRequest("powerShell/getVersion", {}),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error("no answer yet")), 1000)),
+                ]);
+            } catch (err) {
+                await new Promise((resolve) => setTimeout(resolve, 300));
+            }
+        }
+        return null;
     }
 
     // PSES reads its settings from workspace/didChangeConfiguration.
