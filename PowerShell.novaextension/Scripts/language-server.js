@@ -99,7 +99,7 @@ class PowerShellLanguageServer {
         } catch (err) {
             // Already exists.
         }
-        removeStaleFiles(sessionDir, DAY_MS);
+        removeStaleFiles(sessionDir, 10 * 60 * 1000);
         removeStaleFiles(logDir, 7 * DAY_MS);
         removeStaleFiles(nova.path.join(nova.extension.globalStoragePath, "runs"), DAY_MS);
         // Unique per server instance, since several Nova windows may each run one.
@@ -176,15 +176,11 @@ class PowerShellLanguageServer {
             const client = this.client;
             this.client = null;
             // Nova doesn't send shutdown/exit when an extension deactivates; it kills the
-            // server after ~15 s. Ask for a shutdown ourselves (the relay exits as soon as
-            // it is answered), then stop the bridge if it is somehow still running.
-            try {
-                client.sendRequest("shutdown", null).catch(() => {});
-            } catch (err) {
-                // Client may already be gone.
-            }
-            client.stop();
+            // server ~15 s later, and it tears down this JavaScript context as soon as
+            // deactivate() returns, so nothing asynchronous would run. Terminate PSES now;
+            // its socket closing ends the relay and the bridge.
             this.terminateServer(this.sessionFile);
+            client.stop();
         }
         if (this.outputFile) {
             const outputFile = this.outputFile;
@@ -224,31 +220,27 @@ class PowerShellLanguageServer {
         }, 300));
     }
 
-    // Fallback for stop(): terminate PSES (which ends the relay and bridge) if it is still
-    // running a second after we asked it to shut down.
+    // Terminates PSES synchronously using the pid the bridge recorded.
     terminateServer(sessionFile) {
         if (!sessionFile) {
             return;
         }
-        const pidFile = `${sessionFile}.pid`;
-        setTimeout(() => {
-            let pid = "";
-            try {
-                const file = nova.fs.open(pidFile, "r");
-                pid = (file.read() || "").trim();
-                file.close();
-            } catch (err) {
-                return; // Already exited and cleaned up.
-            }
-            if (!/^\d+$/.test(pid)) {
-                return;
-            }
-            try {
-                new Process("/bin/kill", { args: ["-TERM", pid] }).start();
-            } catch (err) {
-                console.error(`Could not stop PowerShell Editor Services: ${err.message}`);
-            }
-        }, 1000);
+        let pid = "";
+        try {
+            const file = nova.fs.open(`${sessionFile}.pid`, "r");
+            pid = (file.read() || "").trim();
+            file.close();
+        } catch (err) {
+            return; // Already exited and cleaned up.
+        }
+        if (!/^\d+$/.test(pid)) {
+            return;
+        }
+        try {
+            new Process("/bin/kill", { args: ["-TERM", pid] }).start();
+        } catch (err) {
+            console.error(`Could not stop PowerShell Editor Services: ${err.message}`);
+        }
     }
 
     // Paths the debug adapter relay needs, or null when the language server isn't running.
