@@ -1,0 +1,338 @@
+{
+    "identifier": "kainorllc.PowerShell",
+    "name": "PowerShell",
+    "organization": "Kainor LLC",
+    "description": "PowerShell 7 support: syntax highlighting, completions, diagnostics, formatting, tasks, and debugging.",
+    "version": "1.0.1",
+    "min_runtime": "11.0",
+    "categories": [
+        "languages",
+        "completions",
+        "issues",
+        "formatters",
+        "commands",
+        "tasks"
+    ],
+    "license": "MIT with Commons Clause",
+    "repository": "https://github.com/Kainor-LLC/nova-powershell",
+    "bugs": "https://github.com/Kainor-LLC/nova-powershell/issues",
+    "main": "main.js",
+    "activationEvents": [
+        "onLanguage:powershell",
+        "onWorkspaceContains:*.ps1",
+        "onWorkspaceContains:*.psm1",
+        "onWorkspaceContains:*.psd1"
+    ],
+    "entitlements": {
+        "process": true,
+        "filesystem": "readwrite"
+    },
+    "commands": {
+        "editor": [
+            {
+                "title": "Rename Symbol…",
+                "command": "powershell.renameSymbol",
+                "filters": {
+                    "syntaxes": [
+                        "powershell"
+                    ]
+                }
+            },
+            {
+                "title": "Show Help for Command",
+                "command": "powershell.showHelp",
+                "filters": {
+                    "syntaxes": [
+                        "powershell"
+                    ]
+                }
+            }
+        ],
+        "extensions": [
+            {
+                "title": "Restart Language Server",
+                "command": "powershell.restartLanguageServer"
+            },
+            {
+                "title": "Show Language Server Logs",
+                "command": "powershell.showLogs"
+            }
+        ]
+    },
+    "config": [
+        {
+            "title": "PowerShell",
+            "type": "section",
+            "children": [
+                {
+                    "key": "powershell.pwshPath",
+                    "title": "PowerShell Path",
+                    "description": "Path to the pwsh executable. Leave empty to detect automatically.",
+                    "type": "path"
+                },
+                {
+                    "key": "powershell.enableProfileLoading",
+                    "title": "Load PowerShell Profile",
+                    "description": "Load your PowerShell profile in the language server session.",
+                    "type": "boolean",
+                    "default": false
+                }
+            ]
+        },
+        {
+            "title": "Language Server",
+            "type": "section",
+            "children": [
+                {
+                    "key": "powershell.languageServer.enabled",
+                    "title": "Enable Language Server",
+                    "description": "Use PowerShell Editor Services for completions, hover help, diagnostics, and formatting.",
+                    "type": "boolean",
+                    "default": true
+                },
+                {
+                    "key": "powershell.languageServer.logLevel",
+                    "title": "Log Level",
+                    "type": "enum",
+                    "values": [
+                        "Trace",
+                        "Debug",
+                        "Information",
+                        "Warning",
+                        "Error",
+                        "None"
+                    ],
+                    "default": "Warning"
+                },
+                {
+                    "key": "powershell.languageServer.debug",
+                    "title": "Log Language Server and Debugger Traffic",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "For troubleshooting. Language server traffic goes to the Extension Console; debugger traffic goes to debug-adapter.log (Extensions → Show Language Server Logs)."
+                }
+            ]
+        },
+        {
+            "title": "Script Analysis",
+            "type": "section",
+            "children": [
+                {
+                    "key": "powershell.scriptAnalysis.enable",
+                    "title": "Enable PSScriptAnalyzer",
+                    "description": "Show PSScriptAnalyzer warnings and errors as you type.",
+                    "type": "boolean",
+                    "default": true
+                },
+                {
+                    "key": "powershell.scriptAnalysis.settingsPath",
+                    "title": "Settings File",
+                    "description": "Path to a PSScriptAnalyzerSettings.psd1 file. Leave empty to use defaults.",
+                    "type": "path"
+                }
+            ]
+        },
+        {
+            "title": "Formatting",
+            "type": "section",
+            "children": [
+                {
+                    "key": "powershell.formatOnSave",
+                    "title": "Format on Save",
+                    "type": "boolean",
+                    "default": false
+                },
+                {
+                    "key": "powershell.codeFormatting.preset",
+                    "title": "Brace Style Preset",
+                    "description": "Custom uses the options below.",
+                    "type": "enum",
+                    "values": [
+                        "Custom",
+                        "OTBS",
+                        "Allman",
+                        "Stroustrup"
+                    ],
+                    "default": "Custom"
+                },
+                {
+                    "key": "powershell.codeFormatting.openBraceOnSameLine",
+                    "title": "Open Brace on Same Line",
+                    "type": "boolean",
+                    "default": true
+                },
+                {
+                    "key": "powershell.codeFormatting.newLineAfterCloseBrace",
+                    "title": "New Line After Close Brace",
+                    "description": "On: else, elseif, catch, and finally start on their own line. Off: keep \"} else {\" together.",
+                    "type": "boolean",
+                    "default": true
+                },
+                {
+                    "key": "powershell.codeFormatting.pipelineIndentationStyle",
+                    "title": "Pipeline Indentation",
+                    "type": "enum",
+                    "values": [
+                        "NoIndentation",
+                        "IncreaseIndentationForFirstPipeline",
+                        "IncreaseIndentationAfterEveryPipeline",
+                        "None"
+                    ],
+                    "default": "NoIndentation"
+                },
+                {
+                    "key": "powershell.codeFormatting.useCorrectCasing",
+                    "title": "Correct Cmdlet Casing",
+                    "type": "boolean",
+                    "default": false
+                },
+                {
+                    "key": "powershell.codeFormatting.autoCorrectAliases",
+                    "title": "Expand Aliases",
+                    "description": "Replace aliases like gci with full command names when formatting.",
+                    "type": "boolean",
+                    "default": false
+                }
+            ]
+        }
+    ],
+    "configWorkspace": [
+        {
+            "key": "powershell.scriptAnalysis.settingsPath",
+            "title": "PSScriptAnalyzer Settings File",
+            "description": "Overrides the global setting for this project.",
+            "type": "path"
+        },
+        {
+            "key": "powershell.formatOnSave",
+            "title": "Format on Save",
+            "type": "boolean"
+        }
+    ],
+    "taskTemplates": {
+        "powershellScript": {
+            "name": "PowerShell Script",
+            "description": "Runs a PowerShell script with pwsh.",
+            "tasks": {
+                "run": {
+                    "resolve": "powershell",
+                    "data": {
+                        "type": "script"
+                    }
+                }
+            },
+            "config": [
+                {
+                    "key": "powershell.task.script",
+                    "title": "Script",
+                    "type": "path",
+                    "relative": true,
+                    "placeholder": "Current file",
+                    "description": "The script to run. Leave empty to run the file open in the editor."
+                },
+                {
+                    "key": "powershell.task.args",
+                    "title": "Arguments",
+                    "type": "stringArray",
+                    "description": "Arguments passed to the script."
+                },
+                {
+                    "key": "powershell.task.cwd",
+                    "title": "Working Directory",
+                    "type": "path",
+                    "relative": true,
+                    "allowFiles": false,
+                    "allowFolders": true,
+                    "placeholder": "Project Root"
+                }
+            ],
+            "image": "powershell"
+        },
+        "powershellDebug": {
+            "name": "PowerShell Debug",
+            "description": "Debugs a PowerShell script with breakpoints.",
+            "tasks": {
+                "run": {
+                    "resolve": "powershell",
+                    "data": {
+                        "type": "script",
+                        "debug": true
+                    }
+                }
+            },
+            "config": [
+                {
+                    "key": "powershell.task.script",
+                    "title": "Script",
+                    "type": "path",
+                    "relative": true,
+                    "placeholder": "Current file",
+                    "description": "The script to run. Leave empty to run the file open in the editor."
+                },
+                {
+                    "key": "powershell.task.args",
+                    "title": "Arguments",
+                    "type": "stringArray",
+                    "description": "Arguments passed to the script."
+                },
+                {
+                    "key": "powershell.task.cwd",
+                    "title": "Working Directory",
+                    "type": "path",
+                    "relative": true,
+                    "allowFiles": false,
+                    "allowFolders": true,
+                    "placeholder": "Project Root"
+                }
+            ],
+            "image": "powershell"
+        },
+        "pester": {
+            "name": "Pester Tests",
+            "description": "Runs Pester 5+ tests.",
+            "tasks": {
+                "run": {
+                    "resolve": "powershell",
+                    "data": {
+                        "type": "pester"
+                    }
+                }
+            },
+            "config": [
+                {
+                    "key": "powershell.pester.path",
+                    "title": "Test Path",
+                    "type": "path",
+                    "relative": true,
+                    "allowFolders": true,
+                    "placeholder": "Project Root",
+                    "description": "A test file or folder. Leave empty to run all tests in the project."
+                },
+                {
+                    "key": "powershell.pester.output",
+                    "title": "Output",
+                    "type": "enum",
+                    "values": [
+                        "None",
+                        "Normal",
+                        "Detailed",
+                        "Diagnostic"
+                    ],
+                    "default": "Detailed"
+                }
+            ],
+            "image": "powershell"
+        }
+    },
+    "debugAdapters": {
+        "powershell": {
+            "name": "PowerShell",
+            "image": "powershell"
+        }
+    },
+    "breakpoints": [
+        {
+            "syntax": "powershell"
+        }
+    ]
+}

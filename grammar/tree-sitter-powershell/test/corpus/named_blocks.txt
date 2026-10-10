@@ -1,0 +1,64 @@
+===
+Function with begin process end clean
+===
+
+function Test-Pipeline {
+    begin { $count = 0 }
+    process { $count++ }
+    end { $count }
+    clean { Remove-Item $temp }
+}
+
+---
+
+(program
+  (statement_list
+    (function_statement
+      (function_name)
+      (script_block
+        script_block_body: (script_block_body
+          named_block_list: (named_block_list
+            (named_block
+              (block_name)
+              (statement_block
+                statement_list: (statement_list
+                  (pipeline
+                    (assignment_expression
+                      (left_assignment_expression
+                        (unary_expression
+                          (variable)))
+                      (assignment_operator)
+                      value: (assignment_value
+                        (pipeline_chain
+                          (unary_expression
+                            (integer_literal
+                              (decimal_integer_literal))))))))))
+            (named_block
+              (block_name)
+              (statement_block
+                statement_list: (statement_list
+                  (pipeline
+                    (pipeline_chain
+                      (unary_expression
+                        (post_increment_expression
+                          (variable))))))))
+            (named_block
+              (block_name)
+              (statement_block
+                statement_list: (statement_list
+                  (pipeline
+                    (pipeline_chain
+                      (unary_expression
+                        (variable)))))))
+            (named_block
+              (block_name)
+              (statement_block
+                statement_list: (statement_list
+                  (pipeline
+                    (pipeline_chain
+                      (command
+                        command_name: (command_name)
+                        command_elements: (command_elements
+                          (command_argument_sep)
+                          (unary_expression
+                            (variable)))))))))))))))

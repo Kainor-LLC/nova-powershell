@@ -1,0 +1,74 @@
+===
+Ternary operator
+===
+
+$x = $true ? "yes" : "no"
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (unary_expression
+            (variable)))
+        (assignment_operator)
+        value: (assignment_value
+          (pipeline_chain
+            (ternary_expression
+              (unary_expression
+                (variable))
+              (unary_expression
+                (string_literal
+                  (expandable_string_literal)))
+              (unary_expression
+                (string_literal
+                  (expandable_string_literal))))))))))
+
+===
+Null-coalescing operator
+===
+
+$x = $y ?? "default"
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (unary_expression
+            (variable)))
+        (assignment_operator)
+        value: (assignment_value
+          (pipeline_chain
+            (null_coalesce_expression
+              (unary_expression
+                (variable))
+              (unary_expression
+                (string_literal
+                  (expandable_string_literal))))))))))
+
+===
+Null-coalescing assignment
+===
+
+$x ??= "default"
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (unary_expression
+            (variable)))
+        (assignment_operator)
+        value: (assignment_value
+          (pipeline_chain
+            (unary_expression
+              (string_literal
+                (expandable_string_literal)))))))))

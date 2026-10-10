@@ -1,0 +1,822 @@
+===
+Function name with symbolic leading char
+; source: nightroman/Invoke-Build/Invoke-Build.ps1
+===
+
+function *Die($M, $C=0) { throw $M }
+*Die 'x' 1
+
+---
+
+(program
+  (statement_list
+    (function_statement
+      (function_name)
+      (function_parameter_declaration
+        (parameter_list
+          (script_parameter
+            (variable))
+          (script_parameter
+            (variable)
+            (script_parameter_default
+              (unary_expression
+                (integer_literal
+                  (decimal_integer_literal)))))))
+      (script_block
+        (script_block_body
+          (statement_list
+            (flow_control_statement
+              (pipeline
+                (pipeline_chain
+                  (unary_expression
+                    (variable)))))))))
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (unary_expression
+              (string_literal
+                (verbatim_string_characters)))
+            (command_argument_sep)
+            (unary_expression
+              (integer_literal
+                (decimal_integer_literal)))))))))
+
+===
+Unquoted bracket-bang argument to command
+; source: mvelazc0/BadZure/legacy/Invoke-BadZure.ps1
+===
+
+Write-Host [!] Creating Users
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (generic_token)
+            (command_argument_sep)
+            (generic_token)
+            (command_argument_sep)
+            (generic_token)))))))
+
+===
+Unquoted type literal as command argument remains type literal
+; source: #33
+===
+
+Write-Host [int]
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (unary_expression
+              (type_literal
+                (type_spec
+                  (type_name
+                    (type_identifier)))))))))))
+
+===
+param default of type literal followed by next param with @() default
+; source: mikefrobbins/PowerShell/MrToolkit/Public/New-DynamicParam.ps1
+===
+
+param(
+    [System.Type]$T = [int],
+    [string[]]$B = @()
+)
+
+---
+
+(program
+  (param_block
+    (parameter_list
+      (script_parameter
+        (attribute_list
+          (attribute
+            (type_literal
+              (type_spec
+                (type_name
+                  (type_name
+                    (type_identifier))
+                  (type_identifier))))))
+        (variable)
+        (script_parameter_default
+          (unary_expression
+            (type_literal
+              (type_spec
+                (type_name
+                  (type_identifier)))))))
+      (script_parameter
+        (attribute_list
+          (attribute
+            (type_literal
+              (type_spec
+                (array_type_name
+                  (type_name
+                    (type_identifier)))))))
+        (variable)
+        (script_parameter_default
+          (unary_expression
+            (array_expression)))))))
+
+===
+Function body with only an attribute then a comment
+; source: texhex/BiosSledgehammer/MPSXM.psm1
+===
+
+function Get-Thing {
+    [OutputType([datetime])]
+    #param()
+    [DateTime]::Now
+}
+
+---
+
+(program
+  (statement_list
+    (function_statement
+      (function_name)
+      (script_block
+        (script_block_body
+          (statement_list
+            (attribute_statement
+              (attribute
+                (attribute_name
+                  (type_spec
+                    (type_name
+                      (type_identifier))))
+                (attribute_arguments
+                  (attribute_argument
+                    (unary_expression
+                      (type_literal
+                        (type_spec
+                          (type_name
+                            (type_identifier)))))))))
+            (comment)
+            (pipeline
+              (pipeline_chain
+                (unary_expression
+                  (member_access
+                    (type_literal
+                      (type_spec
+                        (type_name
+                          (type_identifier))))
+                    (member_name
+                      (simple_name))))))))))))
+
+===
+Top-level bare attribute statement
+===
+
+[CmdletBinding()]
+
+---
+
+(program
+  (statement_list
+    (attribute_statement
+      (attribute
+        (attribute_name
+          (type_spec
+            (type_name
+              (type_identifier))))))))
+
+===
+Comma-separated bareword cmdlet arguments
+; source: guyrleech/Microsoft/URL checker.ps1
+===
+
+Add-Type -AssemblyName PresentationCore , PresentationFramework , System.Windows.Forms , System.Web
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (command_parameter)
+            (command_argument_sep)
+            (bareword_argument_list
+              (generic_token)
+              (generic_token)
+              (generic_token)
+              (generic_token))))))))
+
+===
+Native command argument containing equals sign
+; source: silverqx/TinyORM/tools/deploy.ps1
+===
+
+git --untracked-files=normal
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (command_parameter)))))))
+
+===
+Nested backtick line continuations inside pipeline
+; source: rhysd/ghci-color/ghci-color.ps1
+===
+
+gci | `
+  % { $_ `
+    -replace 'a', 'b' `
+  }
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)))
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (unary_expression
+              (script_block_expression
+                (script_block
+                  (script_block_body
+                    (statement_list
+                      (pipeline
+                        (pipeline_chain
+                          (comparison_expression
+                            (unary_expression
+                              (variable))
+                            (comparison_operator)
+                            (array_literal_expression
+                              (unary_expression
+                                (string_literal
+                                  (verbatim_string_characters)))
+                              (unary_expression
+                                (string_literal
+                                  (verbatim_string_characters))))))))))))))))))
+
+===
+Expandable bareword path with backslash and glob as comma-separated args
+; source: silverqx/TinyORM/tools/deploy.ps1
+===
+
+Get-Item -Path $x\a-*, $y\b-*
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (command_parameter)
+            (command_argument_sep)
+            (bareword_argument_list
+              (expandable_bareword
+                (variable)
+                (generic_token))
+              (expandable_bareword
+                (variable)
+                (generic_token)))))))))
+
+===
+switch case with $(...) or ${...} inside expandable string pattern
+; source: microsoft/sql-server-samples runassessment.ps1, black7375/Firefox-UI-Fix install.ps1
+===
+
+switch ('x') {
+    "$($n)" { 'a' }
+    "${b}"  { 'c' }
+    default { 'd' }
+}
+
+---
+
+(program
+  (statement_list
+    (switch_statement
+      (switch_condition
+        (pipeline
+          (pipeline_chain
+            (unary_expression
+              (string_literal
+                (verbatim_string_characters))))))
+      (switch_body
+        (switch_clauses
+          (switch_clause
+            (switch_clause_condition
+              (string_literal
+                (expandable_string_literal
+                  (sub_expression
+                    (statement_list
+                      (pipeline
+                        (pipeline_chain
+                          (unary_expression
+                            (variable)))))))))
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (string_literal
+                        (verbatim_string_characters))))))))
+          (switch_clause
+            (switch_clause_condition
+              (string_literal
+                (expandable_string_literal
+                  (variable
+                    (braced_variable)))))
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (string_literal
+                        (verbatim_string_characters))))))))
+          (switch_clause
+            (switch_clause_condition)
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (string_literal
+                        (verbatim_string_characters)))))))))))))
+
+===
+switch patterns starting with primary-expression tokens
+; source: #48 review
+===
+
+switch -file $path {
+    default { "ok" }
+}
+
+switch -regex -file .\somefile.txt {
+    default { "path" }
+}
+
+switch ($x) {
+    $pat { "variable" }
+    @(1) { "array" }
+    [int] { "type" }
+}
+
+---
+
+(program
+  (statement_list
+    (switch_statement
+      (switch_condition
+        (switch_filename
+          (variable)))
+      (switch_body
+        (switch_clauses
+          (switch_clause
+            (switch_clause_condition)
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (string_literal
+                        (expandable_string_literal)))))))))))
+    (switch_statement
+      (switch_parameters
+        (switch_parameter))
+      (switch_condition
+        (switch_filename))
+      (switch_body
+        (switch_clauses
+          (switch_clause
+            (switch_clause_condition)
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (string_literal
+                        (expandable_string_literal)))))))))))
+    (switch_statement
+      (switch_condition
+        (pipeline
+          (pipeline_chain
+            (unary_expression
+              (variable)))))
+      (switch_body
+        (switch_clauses
+          (switch_clause
+            (switch_clause_condition
+              (variable))
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (string_literal
+                        (expandable_string_literal))))))))
+          (switch_clause
+            (switch_clause_condition
+              (array_expression
+                (statement_list
+                  (pipeline
+                    (pipeline_chain
+                      (unary_expression
+                        (integer_literal
+                          (decimal_integer_literal))))))))
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (string_literal
+                        (expandable_string_literal))))))))
+          (switch_clause
+            (switch_clause_condition
+              (type_literal
+                (type_spec
+                  (type_name
+                    (type_identifier)))))
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (string_literal
+                        (expandable_string_literal)))))))))))))
+
+===
+Native command with /flag:"$(expr)" colon-prefixed interpolated argument
+; source: 0x6d69636b/windows_hardening/HardeningKitty.psm1
+===
+
+&$BinaryAuditpol /set /subcategory:"$($x)" /success:$($y) /failure:$($z) | Out-Null
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_invocation_operator)
+          (command_name_expr
+            (path_command_name
+              (variable)))
+          (command_elements
+            (command_argument_sep)
+            (generic_token)
+            (command_argument_sep)
+            (concatenated_command_argument
+              (generic_token)
+              (expandable_string_literal
+                (sub_expression
+                  (statement_list
+                    (pipeline
+                      (pipeline_chain
+                        (unary_expression
+                          (variable))))))))
+            (command_argument_sep)
+            (concatenated_command_argument
+              (generic_token)
+              (sub_expression
+                (statement_list
+                  (pipeline
+                    (pipeline_chain
+                      (unary_expression
+                        (variable)))))))
+            (command_argument_sep)
+            (concatenated_command_argument
+              (generic_token)
+              (sub_expression
+                (statement_list
+                  (pipeline
+                    (pipeline_chain
+                      (unary_expression
+                        (variable)))))))
+            (command_argument_sep)))
+        (command
+          (command_name))))))
+
+===
+Backtick-n escape sequence used as bareword argument
+; source: LesFerch/WinSetView/src/317/WinSetView.ps1
+===
+
+Write-Host `n'hello'`n
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          command_name: (command_name)
+          command_elements: (command_elements
+            (command_argument_sep)
+            (escape_character)))))))
+
+===
+Adjacent quoted string + variable chain forming a single command argument
+; source: NetSPI/PowerShell/PowerSkype.ps1
+===
+
+Write-Host 'Auth: '$domain\$username' - '$password -ForegroundColor Red
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (concatenated_command_argument
+              (string_literal
+                (verbatim_string_characters))
+              (variable)
+              (generic_token)
+              (variable)
+              (verbatim_string_characters)
+              (variable))
+            (command_argument_sep)
+            (command_parameter)
+            (command_argument_sep)
+            (generic_token)))))))
+
+===
+Assembly-qualified type literal
+; source: PowerShell/PowerShell test/powershell/Language/Parser/Parsing.Tests.ps1
+===
+
+$x = [System.String, System.Private.CoreLib]
+$y = [System.Collections.Generic.List[string], System.Private.CoreLib].FullName
+$z = [System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (unary_expression
+            (variable)))
+        (assignment_operator)
+        (assignment_value
+          (pipeline_chain
+            (unary_expression
+              (type_literal
+                (type_spec
+                  (type_name
+                    (type_name
+                      (type_identifier))
+                    (type_identifier)))
+                (assembly_qualifier
+                  (assembly_name
+                    (type_name
+                      (type_name
+                        (type_name
+                          (type_identifier))
+                        (type_identifier))
+                      (type_identifier))))))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (unary_expression
+            (variable)))
+        (assignment_operator)
+        (assignment_value
+          (pipeline_chain
+            (unary_expression
+              (member_access
+                (type_literal
+                  (type_spec
+                    (generic_type_name
+                      (type_name
+                        (type_name
+                          (type_name
+                            (type_name
+                              (type_identifier))
+                            (type_identifier))
+                          (type_identifier))
+                        (type_identifier)))
+                    (generic_type_arguments
+                      (type_spec
+                        (type_name
+                          (type_identifier)))))
+                  (assembly_qualifier
+                    (assembly_name
+                      (type_name
+                        (type_name
+                          (type_name
+                            (type_identifier))
+                          (type_identifier))
+                        (type_identifier)))))
+                (member_name
+                  (simple_name))))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (unary_expression
+            (variable)))
+        (assignment_operator)
+        (assignment_value
+          (pipeline_chain
+            (unary_expression
+              (type_literal
+                (type_spec
+                  (type_name
+                    (type_name
+                      (type_identifier))
+                    (type_identifier)))
+                (assembly_qualifier
+                  (assembly_name
+                    (type_name
+                      (type_identifier))
+                    (assembly_attribute
+                      (assembly_attribute_name
+                        (simple_name))
+                      (assembly_attribute_value))
+                    (assembly_attribute
+                      (assembly_attribute_name
+                        (simple_name))
+                      (assembly_attribute_value))
+                    (assembly_attribute
+                      (assembly_attribute_name
+                        (simple_name))
+                      (assembly_attribute_value))))))))))))
+
+===
+Backtick-escaped space followed by line-continuation backtick
+; source: Sitecore/docker-images/Build.ps1
+===
+
+echo x ` `
+    -y z
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          command_name: (command_name)
+          command_elements: (command_elements
+            (command_argument_sep)
+            (generic_token)
+            (command_argument_sep)
+            (escape_character)
+            (command_argument_sep)
+            (command_parameter)
+            (command_argument_sep)
+            (generic_token)))))))
+
+===
+Adjacent (expr).Member followed directly by empty string as argument
+; source: SpotX-Official/SpotX/run.ps1
+; see also #27 / regression 'Adjacent quoted string + variable chain'
+===
+
+Write-Host ($lang).Incorrect"" -ForegroundColor Red
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (concatenated_command_argument
+              (unary_expression
+                (member_access
+                  (parenthesized_expression
+                    (pipeline
+                      (pipeline_chain
+                        (unary_expression
+                          (variable)))))
+                  (member_name
+                    (simple_name))))
+              (expandable_string_literal))
+            (command_argument_sep)
+            (command_parameter)
+            (command_argument_sep)
+            (generic_token)))))))
+
+===
+Unix absolute-path command invocation
+; source: adamdriscoll/selenium-powershell/Internal/init.ps1
+===
+
+/usr/bin/stat -f "%A" "/tmp"
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (command_parameter)
+            (command_argument_sep)
+            (unary_expression
+              (string_literal
+                (expandable_string_literal)))
+            (command_argument_sep)
+            (unary_expression
+              (string_literal
+                (expandable_string_literal)))))))))
+
+===
+Empty scriptblock literal as right-hand side of assignment
+; source: gregoryfmartin/Eldoria/Classes/Mapping/MapTileObject.ps1
+===
+
+$x = {}
+$y.z = {}
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (unary_expression
+            (variable)))
+        (assignment_operator)
+        (assignment_value
+          (pipeline_chain
+            (unary_expression
+              (script_block_expression))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (unary_expression
+            (member_access
+              (variable)
+              (member_name
+                (simple_name)))))
+        (assignment_operator)
+        (assignment_value
+          (pipeline_chain
+            (unary_expression
+              (script_block_expression))))))))
+
+===
+Empty right-hand side of assignment is invalid
+===
+
+$x = ;
+
+---
+
+(program
+  (ERROR
+    (left_assignment_expression
+      (unary_expression
+        (variable)))
+    (assignment_operator))
+  (statement_list
+    (empty_statement)))

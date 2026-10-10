@@ -1,0 +1,145 @@
+================================================================================
+Kainor: null-conditional member access
+================================================================================
+
+${a}?.Name
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (member_access
+            (variable
+              (braced_variable))
+            (member_name
+              (simple_name))))))))
+
+================================================================================
+Kainor: null-conditional method call
+================================================================================
+
+${a}?.ToString()
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (invocation_expression
+            (variable
+              (braced_variable))
+            (member_name
+              (simple_name))
+            (argument_list)))))))
+
+================================================================================
+Kainor: null-conditional element access
+================================================================================
+
+${a}?[0]
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (element_access
+            (variable
+              (braced_variable))
+            (unary_expression
+              (integer_literal
+                (decimal_integer_literal)))))))))
+
+================================================================================
+Kainor: single-line switch clauses
+================================================================================
+
+switch -Regex ($x) { 'a' { 1 } default { 2 } }
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (switch_statement
+      (switch_parameters
+        (switch_parameter))
+      (switch_condition
+        (pipeline
+          (pipeline_chain
+            (unary_expression
+              (variable)))))
+      (switch_body
+        (switch_clauses
+          (switch_clause
+            (switch_clause_condition
+              (string_literal
+                (verbatim_string_characters)))
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (integer_literal
+                        (decimal_integer_literal))))))))
+          (switch_clause
+            (switch_clause_condition)
+            (statement_block
+              (statement_list
+                (pipeline
+                  (pipeline_chain
+                    (unary_expression
+                      (integer_literal
+                        (decimal_integer_literal)))))))))))))
+
+================================================================================
+Kainor: break to bare label
+================================================================================
+
+:outer while ($true) { break outer }
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (label)
+    (while_statement
+      (while_condition
+        (pipeline
+          (pipeline_chain
+            (unary_expression
+              (variable)))))
+      (statement_block
+        (statement_list
+          (flow_control_statement
+            (label_expression
+              (label_name))))))))
+
+================================================================================
+Kainor: continue to bare label
+================================================================================
+
+:outer foreach ($i in 1..3) { continue outer }
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (label)
+    (foreach_statement
+      (variable)
+      (pipeline
+        (pipeline_chain
+          (command
+            (command_name))))
+      (statement_block
+        (statement_list
+          (flow_control_statement
+            (label_expression
+              (label_name))))))))

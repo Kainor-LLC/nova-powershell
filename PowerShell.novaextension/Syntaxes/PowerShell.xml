@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<syntax name="powershell">
+    <meta>
+        <name>PowerShell</name>
+        <type>script</type>
+        <preferred-file-extension>ps1</preferred-file-extension>
+        <scriptable shebang="#!/usr/bin/env pwsh" />
+    </meta>
+
+    <detectors>
+        <extension priority="1.0">ps1,psm1,psd1</extension>
+        <match-content lines="1" priority="1.0">^#!.*\b(pwsh|powershell)\b</match-content>
+    </detectors>
+
+    <indentation>
+        <increase>
+            <expression>(\{[^}"']*$)|(\[[^\]"']*$)|(\([^)"']*$)</expression>
+        </increase>
+        <decrease>
+            <expression>^\s*[\}\]\)]</expression>
+        </decrease>
+    </indentation>
+
+    <comments>
+        <single>
+            <expression>#</expression>
+        </single>
+        <multiline>
+            <starts-with>
+                <expression>&lt;#</expression>
+            </starts-with>
+            <ends-with>
+                <expression>#&gt;</expression>
+            </ends-with>
+        </multiline>
+    </comments>
+
+    <brackets>
+        <pair open="{" close="}" />
+        <pair open="[" close="]" />
+        <pair open="(" close=")" />
+    </brackets>
+
+    <surrounding-pairs>
+        <pair open="{" close="}" />
+        <pair open="[" close="]" />
+        <pair open="(" close=")" />
+        <pair open="&apos;" close="&apos;" />
+        <pair open="&quot;" close="&quot;" />
+    </surrounding-pairs>
+
+    <tree-sitter language="powershell">
+        <highlights />
+        <folds />
+        <symbols />
+    </tree-sitter>
+</syntax>

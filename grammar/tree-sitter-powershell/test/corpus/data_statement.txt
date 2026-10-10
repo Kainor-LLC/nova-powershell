@@ -1,0 +1,20 @@
+===
+Data statement with name
+===
+
+data MyData { "Hello" }
+
+---
+
+(program
+  (statement_list
+    (data_statement
+      (data_name
+        (simple_name))
+      (statement_block
+        statement_list: (statement_list
+          (pipeline
+            (pipeline_chain
+              (unary_expression
+                (string_literal
+                  (expandable_string_literal))))))))))

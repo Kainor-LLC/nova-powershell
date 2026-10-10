@@ -1,0 +1,101 @@
+===
+Enum : Simple enum
+===
+
+enum MyEnum
+{
+    One
+}
+
+---
+
+(program
+  (statement_list
+    (enum_statement
+      (simple_name)
+      (enum_member
+        (simple_name)))))
+
+===
+More complex enum
+===
+
+enum Enum2
+{
+    Part1; Two
+
+    Three
+
+
+
+    Four
+}
+
+---
+
+(program
+  (statement_list
+    (enum_statement
+      (simple_name)
+      (enum_member
+        (simple_name))
+      (enum_member
+        (simple_name))
+      (enum_member
+        (simple_name))
+      (enum_member
+        (simple_name)))))
+
+===
+Enum : with attribute
+===
+
+[Flags()] enum E { A = 1; B = 2 }
+
+---
+
+(program
+  (statement_list
+    (enum_statement
+      (attribute_list
+        (attribute
+          (attribute_name
+            (type_spec
+              (type_name
+                (type_identifier))))))
+      (simple_name)
+      (enum_member
+        (simple_name)
+        (integer_literal
+          (decimal_integer_literal)))
+      (enum_member
+        (simple_name)
+        (integer_literal
+          (decimal_integer_literal))))))
+
+===
+Enum : Complex enum
+===
+
+enum MyEnum
+{
+    One
+    Two = 2; Three = 3
+}
+
+---
+
+(program
+  (statement_list
+    (enum_statement
+      (simple_name)
+      (enum_member
+        (simple_name))
+      (enum_member
+        (simple_name)
+        (integer_literal
+          (decimal_integer_literal)))
+      (enum_member
+        (simple_name)
+        (integer_literal
+          (decimal_integer_literal))))))

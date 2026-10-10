@@ -1,0 +1,50 @@
+name: Bug report
+description: Something isn't working in the PowerShell extension for Nova.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: A small script that shows the problem helps a lot.
+      placeholder: |
+        1. Open a .ps1 file containing ...
+        2. ...
+  - type: input
+    id: extension-version
+    attributes:
+      label: Extension version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: nova-version
+    attributes:
+      label: Nova version
+      placeholder: "14.1"
+    validations:
+      required: true
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS version and Mac type
+      placeholder: "macOS 26, Apple Silicon"
+  - type: input
+    id: pwsh-version
+    attributes:
+      label: PowerShell version
+      description: Output of `pwsh --version`
+      placeholder: "PowerShell 7.6.6"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Anything relevant from Extensions → Extension Console. For debugger problems, turn on "Log Language Server and Debugger Traffic" in the extension preferences and attach debug-adapter.log (Extensions → Show Language Server Logs).
+      render: text

@@ -1,0 +1,11 @@
+.DS_Store
+.nova/Cache/
+node_modules/
+
+# Tree-sitter build intermediates
+grammar/**/build/
+grammar/**/*.o
+grammar/**/*.dylib
+
+# Downloaded PowerShell Editor Services (fetched by tools/, not committed)
+PowerShell.novaextension/Server/

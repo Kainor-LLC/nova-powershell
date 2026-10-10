@@ -1,0 +1,159 @@
+===
+Unsigned integer
+===
+
+12u
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (decimal_integer_literal)))))))
+
+===
+Unsigned long
+===
+
+42ul
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (decimal_integer_literal)))))))
+
+===
+Short integer
+===
+
+100s
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (decimal_integer_literal)))))))
+
+===
+Unsigned short
+===
+
+200us
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (decimal_integer_literal)))))))
+
+===
+Signed byte
+===
+
+5y
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (decimal_integer_literal)))))))
+
+===
+Unsigned byte
+===
+
+10uy
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (decimal_integer_literal)))))))
+
+===
+Hexadecimal integer
+===
+
+0xFF
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (hexadecimal_integer_literal)))))))
+
+===
+Hexadecimal long
+===
+
+0xDEADBEEFl
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (hexadecimal_integer_literal)))))))
+
+===
+Hexadecimal unsigned
+===
+
+0xFFu
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (hexadecimal_integer_literal)))))))
+
+===
+BigInteger suffix
+===
+
+1n
+
+---
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (unary_expression
+          (integer_literal
+            (decimal_integer_literal)))))))

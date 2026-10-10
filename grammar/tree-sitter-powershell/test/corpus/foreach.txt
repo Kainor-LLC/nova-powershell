@@ -1,0 +1,54 @@
+===
+Foreach basic
+===
+
+foreach ($item in $collection) {
+    Write-Host $item
+}
+
+---
+
+(program
+  (statement_list
+    (foreach_statement
+      (variable)
+      (pipeline
+        (pipeline_chain
+          (unary_expression
+            (variable))))
+      (statement_block
+        statement_list: (statement_list
+          (pipeline
+            (pipeline_chain
+              (command
+                command_name: (command_name)
+                command_elements: (command_elements
+                  (command_argument_sep)
+                  (unary_expression
+                    (variable)))))))))))
+
+===
+Foreach with -parallel
+===
+
+foreach -parallel ($item in $collection) {
+    $item
+}
+
+---
+
+(program
+  (statement_list
+    (foreach_statement
+      (foreach_parameter)
+      (variable)
+      (pipeline
+        (pipeline_chain
+          (unary_expression
+            (variable))))
+      (statement_block
+        statement_list: (statement_list
+          (pipeline
+            (pipeline_chain
+              (unary_expression
+                (variable)))))))))

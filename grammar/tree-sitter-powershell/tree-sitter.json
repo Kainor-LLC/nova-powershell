@@ -1,0 +1,45 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "powershell",
+      "camelcase": "Powershell",
+      "scope": "source.ps1",
+      "path": ".",
+      "file-types": [
+        "ps1",
+        "psm1",
+        "psd1",
+        "pssc",
+        "psrc"
+      ],
+      "highlights": [
+        "queries/highlights.scm"
+      ],
+      "injection-regex": "(?i)^(powershell|pwsh|ps1|psm1|psd1|pssc|psrc)$"
+    }
+  ],
+  "metadata": {
+    "version": "0.38.1",
+    "license": "MIT",
+    "description": "PowerShell grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "Wharflab"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/wharflab/tree-sitter-powershell"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "java": false,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": false
+  }
+}
