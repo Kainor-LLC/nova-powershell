@@ -1,3 +1,7 @@
+## Version 1.1.0
+
+- New: module manifest (.psd1) support: completions for keys and values, checks on save with `Test-ModuleManifest` and `FunctionsToExport` verification, and a New Module Manifest… command
+
 ## Version 1.0.2
 
 - New: Run Selection in PowerShell (Editor menu) runs the selected lines or the current line and shows the output

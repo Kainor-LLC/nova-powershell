@@ -24,6 +24,12 @@ Powered by [PowerShell Editor Services](https://github.com/PowerShell/PowerShell
 - **Show Help for Command**: full `Get-Help` output for the command under the cursor (Editor menu)
 - **Run Selection in PowerShell**: runs the selected lines (or the current line) and shows the output in a new tab (Editor menu)
 
+### Module manifests
+
+- **Completions** for manifest keys (with descriptions) and known values such as `CompatiblePSEditions` and `ProcessorArchitecture`; `GUID` is generated for you. In an empty `.psd1`, type `manifest` for a complete skeleton.
+- **Checks on save**: `Test-ModuleManifest` problems appear in the Issues sidebar on the key they concern, plus warnings for `FunctionsToExport` entries that aren't defined and a hint for functions that are defined but not exported. Module files are parsed, never run.
+- **New Module Manifest…** (Extensions menu) creates a module folder with a manifest and an empty `.psm1`.
+
 ![PSScriptAnalyzer warnings in the editor and Issues sidebar](https://raw.githubusercontent.com/Kainor-LLC/nova-powershell/main/docs/screenshots/diagnostics.png)
 
 ### Tasks

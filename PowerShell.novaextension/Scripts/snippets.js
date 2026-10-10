@@ -305,7 +305,7 @@ class SnippetCompletionAssistant {
         }
 
         const typed = (context.text || "").toLowerCase();
-        if (!typed) {
+        if (!typed || /\.psd1$/i.test(editor.document.path || "")) {
             return [];
         }
 

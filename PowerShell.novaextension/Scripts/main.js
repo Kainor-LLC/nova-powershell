@@ -8,6 +8,7 @@ const { runSelection } = require("./run-selection.js");
 const settings = require("./settings.js");
 const tasks = require("./tasks.js");
 const snippets = require("./snippets.js");
+const manifest = require("./manifest.js");
 
 let server = null;
 
@@ -26,6 +27,9 @@ exports.activate = function () {
 
     nova.subscriptions.add(tasks.register(server));
     nova.subscriptions.add(snippets.register());
+    for (const disposable of manifest.register()) {
+        nova.subscriptions.add(disposable);
+    }
 
     nova.commands.register("powershell.restartLanguageServer", () => server.restart());
 

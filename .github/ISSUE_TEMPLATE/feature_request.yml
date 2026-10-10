@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest an improvement or a new feature for the PowerShell extension.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Describe the feature or change, and what it would help you do.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: How do you handle this today?
+      description: Any workaround you use now, or how another editor handles it, helps us understand the need.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Example scripts, screenshots, or links.

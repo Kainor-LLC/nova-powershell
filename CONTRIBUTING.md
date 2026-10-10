@@ -2,7 +2,8 @@
 
 Thanks for helping improve PowerShell for Nova.
 
-- **Bugs and ideas:** open an issue using the bug report form.
+- **Bugs:** open an issue using the bug report form.
+- **Ideas and suggestions:** open an issue using the feature request form. Small or large, they are welcome.
 - **Pull requests:** welcome. The maintainer reviews and merges all changes. For anything large, open an issue first so we can agree on the approach.
 - **Developing:** see the [README](README.md#developing) for how to run the extension from source.
 

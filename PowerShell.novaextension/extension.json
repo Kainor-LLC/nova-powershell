@@ -3,7 +3,7 @@
     "name": "PowerShell",
     "organization": "Kainor LLC",
     "description": "PowerShell 7 support: syntax highlighting, completions, diagnostics, formatting, tasks, and debugging.",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "min_runtime": "11.0",
     "categories": [
         "languages",
@@ -58,6 +58,10 @@
             }
         ],
         "extensions": [
+            {
+                "title": "New Module Manifest…",
+                "command": "powershell.newModuleManifest"
+            },
             {
                 "title": "Restart Language Server",
                 "command": "powershell.restartLanguageServer"
@@ -138,6 +142,13 @@
                     "title": "Settings File",
                     "description": "Path to a PSScriptAnalyzerSettings.psd1 file. Leave empty to use defaults.",
                     "type": "path"
+                },
+                {
+                    "key": "powershell.manifest.validate",
+                    "title": "Check Module Manifests on Save",
+                    "description": "When a module manifest (.psd1) is saved, run Test-ModuleManifest and compare FunctionsToExport with the functions defined in the module's files.",
+                    "type": "boolean",
+                    "default": true
                 }
             ]
         },
