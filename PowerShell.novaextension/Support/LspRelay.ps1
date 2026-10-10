@@ -11,6 +11,7 @@
       NOVA_PS_SESSION_FILE  PSES session details JSON
       NOVA_PS_CACHE_DIR     Where the compiled relay assembly is cached
       NOVA_PS_LSP_LOG       Optional file to log message methods and ids to (not contents)
+      NOVA_PS_READY_FILE    Written once Nova's "initialized" notification has been forwarded
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -28,6 +29,7 @@ public static class NovaLspRelay
     static readonly object LogLock = new object();
     static StreamWriter _log;
     static string _shutdownId;
+    static string _readyFile;
 
     static void Log(string text)
     {
@@ -42,8 +44,9 @@ public static class NovaLspRelay
         }
     }
 
-    public static int Run(string socketPath, string logFile)
+    public static int Run(string socketPath, string logFile, string readyFile)
     {
+        _readyFile = readyFile;
         if (!string.IsNullOrEmpty(logFile))
         {
             _log = new StreamWriter(logFile, false, new UTF8Encoding(false));
@@ -87,6 +90,12 @@ public static class NovaLspRelay
             if (method == "shutdown")
             {
                 _shutdownId = id;
+            }
+            // After "initialized" the server accepts notifications; the extension waits for
+            // this marker before sending its settings (anything sent earlier is dropped).
+            if (method == "initialized" && !string.IsNullOrEmpty(_readyFile))
+            {
+                try { File.WriteAllText(_readyFile, "ready\n"); Log("ready marker written"); } catch (Exception e) { Log("ready marker failed: " + e.Message); }
             }
             if (method == "exit")
             {
@@ -237,4 +246,4 @@ if (-not $socketPath) {
     exit 1
 }
 
-exit [NovaLspRelay]::Run($socketPath, $env:NOVA_PS_LSP_LOG)
+exit [NovaLspRelay]::Run($socketPath, $env:NOVA_PS_LSP_LOG, $env:NOVA_PS_READY_FILE)

@@ -17,7 +17,7 @@ HOST_VERSION="$7"
 CACHE_DIR="$8"
 SUPPORT_DIR=$(cd "$(dirname "$0")" && pwd)
 
-rm -f "$SESSION_FILE"
+rm -f "$SESSION_FILE" "$SESSION_FILE.ready"
 : > "$OUTPUT_FILE"
 
 # Script output from debug sessions goes to the PSES console, captured in OUTPUT_FILE
@@ -37,7 +37,7 @@ echo "$PSES_PID" > "$SESSION_FILE.pid"
 
 cleanup() {
     kill "$PSES_PID" 2>/dev/null
-    rm -f "$SESSION_FILE" "$SESSION_FILE.pid" "$SESSION_FILE.stop"
+    rm -f "$SESSION_FILE" "$SESSION_FILE.pid" "$SESSION_FILE.stop" "$SESSION_FILE.ready"
 }
 trap cleanup EXIT INT TERM HUP
 
@@ -66,5 +66,5 @@ LAUNCHER_PID=$PPID
 # itself and exits as soon as Nova closes stdin or PSES closes the socket; the trap
 # above then stops PSES. (nc isn't used: on macOS it keeps running after stdin closes,
 # and PSES keeps running after the LSP "exit", so Nova had to wait out its timeout.)
-NOVA_PS_SESSION_FILE="$SESSION_FILE" NOVA_PS_CACHE_DIR="$CACHE_DIR" NOVA_PS_LSP_LOG="$SESSION_FILE.relay.log" \
+NOVA_PS_SESSION_FILE="$SESSION_FILE" NOVA_PS_CACHE_DIR="$CACHE_DIR" NOVA_PS_LSP_LOG="$SESSION_FILE.relay.log" NOVA_PS_READY_FILE="$SESSION_FILE.ready" \
     "$PWSH" -NoLogo -NoProfile -NonInteractive -File "$SUPPORT_DIR/LspRelay.ps1"

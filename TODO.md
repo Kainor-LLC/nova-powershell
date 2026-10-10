@@ -72,7 +72,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] Buy Me a Coffee link (GitHub Sponsor button, manifest `funding`, README)
 - [x] Help keyword highlighting inside `<# #>` comments (verified in Nova)
 - [x] Language server start/stop: unique client id per start, LspRelay.ps1 replaces nc, deactivate() writes a stop marker the bridge watches (Nova sends no shutdown and runs no processes during deactivate); old server gone 0.4 s after deactivation (verified in Nova)
-- [x] Settings sent once PSES answers `powerShell/getVersion` (it drops notifications sent before initialization; pre-init requests get an id-less error, so probes use a 1 s deadline)
+- [x] Settings sent once the relay's ready marker appears (written when Nova's `initialized` is forwarded); PSES drops notifications sent earlier, and any LSP request sent earlier produces console noise
 - [x] Audit: PSES logs, captured output, relay logs, and the system log show no errors; empty PSES logs now deleted at startup; no resync right after a save; debug line removed from snippets
 
 ## Phase 5 — Polish & publish

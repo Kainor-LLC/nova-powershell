@@ -156,18 +156,25 @@ class PowerShellLanguageServer {
         this.startRetries = 0;
         console.log(`Started PowerShell Editor Services with ${pwsh}`);
 
-        // PSES drops notifications that arrive before it has initialized, so wait until it
-        // answers a request before sending the settings.
-        this.waitForServer(client).then((version) => {
+        // PSES drops notifications that arrive before it has initialized, so wait for the
+        // relay's ready marker (written when Nova's "initialized" goes through) first.
+        const sessionFile = this.sessionFile;
+        this.waitForServer(client, sessionFile).then((ready) => {
             if (this.client !== client) {
                 return;
             }
-            if (version) {
-                console.log(`PowerShell Editor Services ready (PowerShell ${version.version})`);
+            if (ready) {
+                console.log(`PowerShell Editor Services ready (PowerShell ${this.serverVersion(sessionFile) || "unknown version"})`);
             } else {
-                console.error("PowerShell Editor Services did not answer within 60 s; sending settings anyway");
+                console.error("PowerShell Editor Services did not initialize within 60 s; sending settings anyway");
             }
             this.pushSettings();
+            // Once more a little later, in case the first landed in the last moments of startup.
+            setTimeout(() => {
+                if (this.client === client) {
+                    this.pushSettings();
+                }
+            }, 3000);
         });
     }
 
@@ -280,22 +287,33 @@ class PowerShellLanguageServer {
         }, 1000);
     }
 
-    // Resolves with PSES's version once it answers requests, i.e. after initialization.
-    // A request sent earlier is answered with an error that carries no request id, which
-    // never resolves the promise, so each probe gets a short deadline and is retried.
-    async waitForServer(client) {
+    // Resolves true once the relay has written the session's ready marker (no LSP traffic:
+    // a request sent before initialization is answered with an id-less error that Nova
+    // can't match, and it shows up as noise in the console).
+    async waitForServer(client, sessionFile) {
+        const readyFile = `${sessionFile}.ready`;
         const deadline = Date.now() + 60000;
         while (this.client === client && Date.now() < deadline) {
-            try {
-                return await Promise.race([
-                    client.sendRequest("powerShell/getVersion", {}),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error("no answer yet")), 1000)),
-                ]);
-            } catch (err) {
+            if (nova.fs.access(readyFile, nova.fs.F_OK)) {
+                // Give the server a moment to finish flipping to initialized.
                 await new Promise((resolve) => setTimeout(resolve, 300));
+                return true;
             }
+            await new Promise((resolve) => setTimeout(resolve, 200));
         }
-        return null;
+        return false;
+    }
+
+    // The PowerShell version PSES reported in its session file.
+    serverVersion(sessionFile) {
+        try {
+            const file = nova.fs.open(sessionFile, "r");
+            const session = JSON.parse(file.read() || "{}");
+            file.close();
+            return session.powerShellVersion || null;
+        } catch (err) {
+            return null;
+        }
     }
 
     // PSES reads its settings from workspace/didChangeConfiguration.
