@@ -51,6 +51,7 @@
 
     <tree-sitter language="powershell">
         <highlights />
+        <injections />
         <folds />
         <symbols />
     </tree-sitter>

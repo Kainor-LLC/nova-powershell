@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Comment-based help inside <# ... #> comments; injected by Queries/injections.scm. -->
+<syntax name="powershell_help" subsyntax="true">
+    <meta>
+        <name>PowerShell Help</name>
+    </meta>
+
+    <tree-sitter>
+        <highlights path="highlights-help.scm" />
+    </tree-sitter>
+</syntax>

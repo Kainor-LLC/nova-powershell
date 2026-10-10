@@ -1,5 +1,6 @@
 ## Version 1.1.0
 
+- New: comment-based help keywords are highlighted inside `<# … #>` comments
 - New: module manifest (.psd1) support: completions for keys and values, checks on save with `Test-ModuleManifest` and `FunctionsToExport` verification, and a New Module Manifest… command
 
 ## Version 1.0.2

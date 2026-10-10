@@ -9,7 +9,8 @@ A PowerShell extension for [Nova](https://nova.app) by Kainor LLC. See the [exte
   - `Scripts/` — extension JavaScript (language client, tasks, snippets, commands)
   - `Support/` — helper scripts run by the extension (see below)
   - `Server/` — PowerShell Editor Services, downloaded by `tools/fetch-pses.sh` (not in git)
-- `grammar/` — vendored Tree-sitter grammar with local changes ([VENDORED.md](grammar/VENDORED.md))
+- `grammar/tree-sitter-powershell/` — vendored Tree-sitter grammar with local changes ([VENDORED.md](grammar/VENDORED.md))
+- `grammar/tree-sitter-powershell-help/` — our small grammar for comment-based help, injected into `<# … #>` comments
 - `tools/` — build scripts and test samples
 - `TODO.md` — roadmap and progress
 
@@ -25,7 +26,7 @@ A PowerShell extension for [Nova](https://nova.app) by Kainor LLC. See the [exte
 2. Open this folder in Nova.
 3. Extensions → Activate Project as Extension (enable "Show extension development items" in Nova Settings → General first).
 
-After changing the grammar, run `tools/build-parser.sh` (needs `brew install tree-sitter-cli`) and reactivate the extension. Run `tree-sitter test` in `grammar/tree-sitter-powershell` for grammar tests.
+After changing either grammar, run `tools/build-parser.sh` (needs `brew install tree-sitter-cli`) and reactivate the extension. Run `tree-sitter test` in `grammar/tree-sitter-powershell` for grammar tests.
 
 To regenerate the icons, run `swift tools/make-icons.swift PowerShell.novaextension`.
 

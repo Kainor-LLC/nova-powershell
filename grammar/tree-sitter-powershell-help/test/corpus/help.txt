@@ -1,0 +1,103 @@
+================================================================================
+Help block with sections, a parameter, and plain text
+================================================================================
+
+<#
+.SYNOPSIS
+    Greets someone.
+.PARAMETER Name
+    The name to greet. See .NET docs.
+.example
+    Get-Greeting -Name World
+#>
+
+--------------------------------------------------------------------------------
+
+(help
+  (newline)
+  (text
+    (word))
+  (newline)
+  (directive
+    (section_keyword))
+  (newline)
+  (text
+    (space)
+    (word)
+    (space)
+    (word))
+  (newline)
+  (directive
+    (argument_keyword)
+    (space)
+    (argument))
+  (newline)
+  (text
+    (space)
+    (word)
+    (space)
+    (word)
+    (space)
+    (word)
+    (space)
+    (word)
+    (space)
+    (word)
+    (space)
+    (word)
+    (space)
+    (word))
+  (newline)
+  (directive
+    (section_keyword))
+  (newline)
+  (text
+    (space)
+    (word)
+    (space)
+    (word)
+    (space)
+    (word))
+  (newline)
+  (text
+    (word))
+  (newline))
+
+================================================================================
+Keyword-like words mid-line and blank lines are plain text
+================================================================================
+
+Not a .SYNOPSIS here
+
+.NOTES   Trailing text on the keyword line
+
+--------------------------------------------------------------------------------
+
+(help
+  (newline)
+  (text
+    (word)
+    (space)
+    (word)
+    (space)
+    (word)
+    (space)
+    (word))
+  (newline)
+  (newline)
+  (directive
+    (section_keyword)
+    (text
+      (space)
+      (word)
+      (space)
+      (word)
+      (space)
+      (word)
+      (space)
+      (word)
+      (space)
+      (word)
+      (space)
+      (word)))
+  (newline))

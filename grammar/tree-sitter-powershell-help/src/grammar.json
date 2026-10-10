@@ -1,0 +1,195 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
+  "name": "powershell_help",
+  "rules": {
+    "help": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_line"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "newline"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_line"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "_line": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "directive"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "text"
+        }
+      ]
+    },
+    "directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "space"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "argument_keyword"
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "space"
+                        },
+                        {
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "word"
+                          },
+                          "named": true,
+                          "value": "argument"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "section_keyword"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "text"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "section_keyword": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "PATTERN",
+          "value": "\\.([sS][yY][nN][oO][pP][sS][iI][sS]|[dD][eE][sS][cC][rR][iI][pP][tT][iI][oO][nN]|[eE][xX][aA][mM][pP][lL][eE]|[iI][nN][pP][uU][tT][sS]|[oO][uU][tT][pP][uU][tT][sS]|[nN][oO][tT][eE][sS]|[lL][iI][nN][kK]|[cC][oO][mM][pP][oO][nN][eE][nN][tT]|[rR][oO][lL][eE]|[fF][uU][nN][cC][tT][iI][oO][nN][aA][lL][iI][tT][yY])"
+        }
+      }
+    },
+    "argument_keyword": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "PATTERN",
+          "value": "\\.([pP][aA][rR][aA][mM][eE][tT][eE][rR]|[fF][oO][rR][wW][aA][rR][dD][hH][eE][lL][pP][tT][aA][rR][gG][eE][tT][nN][aA][mM][eE]|[fF][oO][rR][wW][aA][rR][dD][hH][eE][lL][pP][cC][aA][tT][eE][gG][oO][rR][yY]|[rR][eE][mM][oO][tT][eE][hH][eE][lL][pP][rR][uU][nN][sS][pP][aA][cC][eE]|[eE][xX][tT][eE][rR][nN][aA][lL][hH][eE][lL][pP])"
+        }
+      }
+    },
+    "text": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "space"
+          }
+        ]
+      }
+    },
+    "word": {
+      "type": "PATTERN",
+      "value": "[^\\s]+"
+    },
+    "space": {
+      "type": "PATTERN",
+      "value": "[ \\t]+"
+    },
+    "newline": {
+      "type": "PATTERN",
+      "value": "\\r?\\n"
+    }
+  },
+  "extras": [],
+  "conflicts": [
+    [
+      "directive",
+      "text"
+    ]
+  ],
+  "precedences": [],
+  "externals": [],
+  "inline": [],
+  "supertypes": [],
+  "reserved": {}
+}

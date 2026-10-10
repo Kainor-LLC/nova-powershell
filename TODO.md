@@ -87,7 +87,6 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 ---
 
 ## Future ideas
-- `Queries/injections.scm`: comment-based help keywords (`.SYNOPSIS`, `.PARAMETER`…)
 - Read-Host/console input is not supported while debugging (no console attached)
 - Attach to a running PowerShell process (stretch)
 

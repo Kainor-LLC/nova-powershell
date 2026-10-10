@@ -7,6 +7,7 @@
 ### Editing
 
 - **Syntax highlighting** built on Tree-sitter, including PowerShell 7 syntax (`? :`, `??`, `??=`, `?.`), classes, enums, here-strings, and string interpolation
+- **Comment-based help** keywords (`.SYNOPSIS`, `.PARAMETER Name`, …) highlighted inside `<# … #>` comments
 - **Code folding** for blocks, comment-based help, here-strings, and `#region` / `#endregion`
 - **Symbols sidebar** with functions, classes, methods, properties, enums, and regions
 - **Snippets** for advanced functions, comment-based help, control flow, classes, splatting, and Pester (type `function`, `help`, `foreach`, `try`, `Describe`, …)

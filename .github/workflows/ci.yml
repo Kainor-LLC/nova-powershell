@@ -22,18 +22,26 @@ jobs:
         run: npm install -g tree-sitter-cli@0.27.1
 
       - name: Grammar tests
-        working-directory: grammar/tree-sitter-powershell
-        run: tree-sitter test
-
-      - name: Parser is generated for Tree-sitter ABI 14 (older Nova releases)
-        run: grep -q '#define LANGUAGE_VERSION 14' grammar/tree-sitter-powershell/src/parser.c
-
-      - name: Nova queries compile against the grammar
         run: |
-          for query in PowerShell.novaextension/Queries/*.scm; do
+          for grammar in grammar/tree-sitter-powershell grammar/tree-sitter-powershell-help; do
+            echo "Testing $grammar"
+            (cd "$grammar" && tree-sitter test)
+          done
+
+      - name: Parsers are generated for Tree-sitter ABI 14 (older Nova releases)
+        run: |
+          grep -q '#define LANGUAGE_VERSION 14' grammar/tree-sitter-powershell/src/parser.c
+          grep -q '#define LANGUAGE_VERSION 14' grammar/tree-sitter-powershell-help/src/parser.c
+
+      - name: Nova queries compile against the grammars
+        run: |
+          for query in PowerShell.novaextension/Queries/highlights.scm PowerShell.novaextension/Queries/folds.scm \
+                       PowerShell.novaextension/Queries/symbols.scm PowerShell.novaextension/Queries/injections.scm; do
             echo "Checking $query"
             tree-sitter query -p grammar/tree-sitter-powershell "$query" tools/samples/sample.ps1 > /dev/null
           done
+          sed -n 2,7p tools/samples/sample.ps1 > /tmp/help.txt
+          tree-sitter query -p grammar/tree-sitter-powershell-help PowerShell.novaextension/Queries/highlights-help.scm /tmp/help.txt > /dev/null
 
       - name: Sample scripts parse without errors
         run: |

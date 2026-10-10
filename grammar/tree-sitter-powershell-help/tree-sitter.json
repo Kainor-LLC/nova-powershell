@@ -1,0 +1,16 @@
+{
+  "grammars": [
+    {
+      "name": "powershell_help",
+      "camelcase": "PowershellHelp",
+      "scope": "source.powershell.help",
+      "path": "."
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "license": "MIT",
+    "description": "PowerShell comment-based help, for syntax injection",
+    "authors": [{ "name": "Kainor LLC" }]
+  }
+}
