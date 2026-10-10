@@ -122,8 +122,10 @@ class PowerShellLanguageServer {
             nova.path.join(nova.extension.globalStoragePath, "cache"),
         ];
 
+        // A unique identifier per start: Nova keeps a stopped client's identifier reserved
+        // until its process has exited, which would otherwise block the next start.
         const client = new LanguageClient(
-            "kainorllc.PowerShell.pses",
+            `kainorllc.PowerShell.pses.${id}`,
             "PowerShell Editor Services",
             { type: "stdio", path: "/bin/sh", args },
             {

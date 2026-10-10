@@ -58,5 +58,5 @@ LAUNCHER_PID=$PPID
 # itself and exits as soon as Nova closes stdin or PSES closes the socket; the trap
 # above then stops PSES. (nc isn't used: on macOS it keeps running after stdin closes,
 # and PSES keeps running after the LSP "exit", so Nova had to wait out its timeout.)
-NOVA_PS_SESSION_FILE="$SESSION_FILE" NOVA_PS_CACHE_DIR="$CACHE_DIR" \
+NOVA_PS_SESSION_FILE="$SESSION_FILE" NOVA_PS_CACHE_DIR="$CACHE_DIR" NOVA_PS_LSP_LOG="$SESSION_FILE.relay.log" \
     "$PWSH" -NoLogo -NoProfile -NonInteractive -File "$SUPPORT_DIR/LspRelay.ps1"

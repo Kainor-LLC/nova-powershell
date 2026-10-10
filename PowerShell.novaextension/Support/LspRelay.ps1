@@ -10,6 +10,7 @@
     Inputs (environment):
       NOVA_PS_SESSION_FILE  PSES session details JSON
       NOVA_PS_CACHE_DIR     Where the compiled relay assembly is cached
+      NOVA_PS_LSP_LOG       Optional file to log message methods and ids to (not contents)
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -24,8 +25,29 @@ using System.Threading;
 
 public static class NovaLspRelay
 {
-    public static int Run(string socketPath)
+    static readonly object LogLock = new object();
+    static StreamWriter _log;
+    static string _shutdownId;
+
+    static void Log(string text)
     {
+        if (_log == null)
+        {
+            return;
+        }
+        lock (LogLock)
+        {
+            _log.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " " + text);
+            _log.Flush();
+        }
+    }
+
+    public static int Run(string socketPath, string logFile)
+    {
+        if (!string.IsNullOrEmpty(logFile))
+        {
+            _log = new StreamWriter(logFile, false, new UTF8Encoding(false));
+        }
         var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
         socket.Connect(new UnixDomainSocketEndPoint(socketPath));
         var server = new NetworkStream(socket, true);
@@ -33,16 +55,17 @@ public static class NovaLspRelay
         var stdout = Console.OpenStandardOutput();
 
         var done = new ManualResetEventSlim(false);
-        new Thread(() => { try { RelayClientFrames(stdin, server); } catch { } finally { done.Set(); } }) { IsBackground = true }.Start();
-        new Thread(() => { try { Copy(server, stdout); } catch { } finally { done.Set(); } }) { IsBackground = true }.Start();
+        new Thread(() => { try { RelayClientFrames(stdin, server); } catch (Exception e) { Log("client relay ended: " + e.Message); } finally { done.Set(); } }) { IsBackground = true }.Start();
+        new Thread(() => { try { RelayServerFrames(server, stdout); } catch (Exception e) { Log("server relay ended: " + e.Message); } finally { done.Set(); } }) { IsBackground = true }.Start();
         done.Wait();
+        Log("relay exiting");
         try { server.Dispose(); } catch { }
         return 0;
     }
 
-    // Forwards Nova's messages frame by frame. PSES takes many seconds to close its socket
-    // after the LSP "exit" notification, so the relay forwards "exit" and then returns,
-    // letting the bridge stop PSES right away.
+    // Forwards Nova's messages frame by frame. PSES keeps running for many seconds after
+    // the LSP "exit" notification, so the relay returns as soon as it has forwarded "exit"
+    // (or seen the server answer "shutdown"), letting the bridge stop PSES right away.
     static void RelayClientFrames(Stream client, Stream server)
     {
         while (true)
@@ -50,33 +73,77 @@ public static class NovaLspRelay
             int length = ReadContentLength(client);
             if (length < 0)
             {
+                Log("Nova closed stdin");
                 return;
             }
             byte[] body = ReadExactly(client, length);
+            string method, id;
+            Describe(body, out method, out id);
+            Log("-> " + (method ?? "response") + (id != null ? " #" + id : ""));
             byte[] header = Encoding.ASCII.GetBytes("Content-Length: " + body.Length + "\r\n\r\n");
             server.Write(header, 0, header.Length);
             server.Write(body, 0, body.Length);
             server.Flush();
-            if (IsExitNotification(body))
+            if (method == "shutdown")
             {
+                _shutdownId = id;
+            }
+            if (method == "exit")
+            {
+                Log("exit forwarded");
                 return;
             }
         }
     }
 
-    static bool IsExitNotification(byte[] body)
+    static void RelayServerFrames(Stream server, Stream client)
     {
+        while (true)
+        {
+            int length = ReadContentLength(server);
+            if (length < 0)
+            {
+                Log("PSES closed the socket");
+                return;
+            }
+            byte[] body = ReadExactly(server, length);
+            string method, id;
+            Describe(body, out method, out id);
+            Log("<- " + (method ?? "response") + (id != null ? " #" + id : ""));
+            byte[] header = Encoding.ASCII.GetBytes("Content-Length: " + body.Length + "\r\n\r\n");
+            client.Write(header, 0, header.Length);
+            client.Write(body, 0, body.Length);
+            client.Flush();
+            if (method == null && id != null && id == _shutdownId)
+            {
+                Log("shutdown answered");
+                return;
+            }
+        }
+    }
+
+    // Reads a message's method (null for responses) and id (null for notifications).
+    static void Describe(byte[] body, out string method, out string id)
+    {
+        method = null;
+        id = null;
         try
         {
             using (var document = JsonDocument.Parse(body))
             {
-                JsonElement method;
-                return document.RootElement.TryGetProperty("method", out method) && method.GetString() == "exit";
+                JsonElement element;
+                if (document.RootElement.TryGetProperty("method", out element))
+                {
+                    method = element.GetString();
+                }
+                if (document.RootElement.TryGetProperty("id", out element) && element.ValueKind != JsonValueKind.Null)
+                {
+                    id = element.ToString();
+                }
             }
         }
         catch
         {
-            return false;
         }
     }
 
@@ -130,16 +197,6 @@ public static class NovaLspRelay
         return buffer;
     }
 
-    static void Copy(Stream from, Stream to)
-    {
-        var buffer = new byte[65536];
-        int count;
-        while ((count = from.Read(buffer, 0, buffer.Length)) > 0)
-        {
-            to.Write(buffer, 0, count);
-            to.Flush();
-        }
-    }
 }
 '@
 
@@ -180,4 +237,4 @@ if (-not $socketPath) {
     exit 1
 }
 
-exit [NovaLspRelay]::Run($socketPath)
+exit [NovaLspRelay]::Run($socketPath, $env:NOVA_PS_LSP_LOG)
