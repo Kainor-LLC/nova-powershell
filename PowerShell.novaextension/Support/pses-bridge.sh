@@ -19,9 +19,6 @@ SUPPORT_DIR=$(cd "$(dirname "$0")" && pwd)
 
 rm -f "$SESSION_FILE"
 : > "$OUTPUT_FILE"
-# The extension uses this to stop the bridge itself: Nova sends no shutdown or exit when
-# an extension deactivates, and only kills the server after a ~15 s grace period.
-echo $$ > "$SESSION_FILE.pid"
 
 # Script output from debug sessions goes to the PSES console, captured in OUTPUT_FILE
 # for the debug adapter relay to forward to Nova's debug console.
@@ -33,6 +30,10 @@ NO_COLOR=1 "$PWSH" -NoLogo -NoProfile -NonInteractive \
     -SessionDetailsPath "$SESSION_FILE" \
     < /dev/null > "$OUTPUT_FILE" 2>&1 &
 PSES_PID=$!
+# The extension uses this to stop PSES itself: Nova sends no shutdown or exit when an
+# extension deactivates and only kills the server after a ~15 s grace period. Killing
+# PSES closes the socket, which ends the relay and this bridge.
+echo "$PSES_PID" > "$SESSION_FILE.pid"
 
 cleanup() {
     kill "$PSES_PID" 2>/dev/null

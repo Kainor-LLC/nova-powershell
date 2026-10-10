@@ -184,7 +184,7 @@ class PowerShellLanguageServer {
                 // Client may already be gone.
             }
             client.stop();
-            this.terminateBridge(this.sessionFile);
+            this.terminateServer(this.sessionFile);
         }
         if (this.outputFile) {
             const outputFile = this.outputFile;
@@ -224,9 +224,9 @@ class PowerShellLanguageServer {
         }, 300));
     }
 
-    // Fallback for stop(): terminate the bridge process (which stops PSES) if it is still
+    // Fallback for stop(): terminate PSES (which ends the relay and bridge) if it is still
     // running a second after we asked it to shut down.
-    terminateBridge(sessionFile) {
+    terminateServer(sessionFile) {
         if (!sessionFile) {
             return;
         }
@@ -246,7 +246,7 @@ class PowerShellLanguageServer {
             try {
                 new Process("/bin/kill", { args: ["-TERM", pid] }).start();
             } catch (err) {
-                console.error(`Could not stop the language server bridge: ${err.message}`);
+                console.error(`Could not stop PowerShell Editor Services: ${err.message}`);
             }
         }, 1000);
     }
